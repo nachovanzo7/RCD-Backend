@@ -44,7 +44,7 @@ class AprobarSolicitudCliente(APIView):
         try:
             solicitud = SolicitudCliente.objects.get(pk=pk)
         except SolicitudCliente.DoesNotExist:
-            return Response({'error': 'Solicitud no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Su solicitud no fue encontrada.'}, status=status.HTTP_404_NOT_FOUND)
         
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -52,7 +52,7 @@ class AprobarSolicitudCliente(APIView):
         solicitud.estado = 'aceptado'
         solicitud.save()
         
-        return Response({'mensaje': 'Solicitud aprobada.'}, status=status.HTTP_200_OK)
+        return Response({'mensaje': 'Su solicitud fue aprobada.'}, status=status.HTTP_200_OK)
 
 class RechazarSolicitudCliente(APIView):
     """
@@ -62,7 +62,7 @@ class RechazarSolicitudCliente(APIView):
         try:
             solicitud = SolicitudCliente.objects.get(pk=pk)
         except SolicitudCliente.DoesNotExist:
-            return Response({'error': 'Solicitud no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Su solicitud no fue encontrada.'}, status=status.HTTP_404_NOT_FOUND)
         
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -70,7 +70,7 @@ class RechazarSolicitudCliente(APIView):
         solicitud.estado = 'rechazado'
         solicitud.save()
         
-        return Response({'mensaje': 'Solicitud rechazada.'}, status=status.HTTP_200_OK)
+        return Response({'mensaje': 'Su solicitud fue rechazada.'}, status=status.HTTP_200_OK)
 
 class ListarClientesAprobados(APIView):
     """
@@ -82,3 +82,19 @@ class ListarClientesAprobados(APIView):
         clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')
         serializer = ClienteSerializer(clientes_aprobados, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ActualizarCliente(APIView):
+    """
+    Endpoint para actualizar los datos de un cliente.
+    """
+    def patch(self, request, pk):
+        try:
+            cliente = Cliente.objects.get(pk=pk)
+        except Cliente.DoesNotExist:
+            return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ClienteSerializer(cliente, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
