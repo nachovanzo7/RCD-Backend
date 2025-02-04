@@ -39,10 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'clientes',
     'rest_framework',
-     "django_admin_interface",
-    "colorfield",  # Dependencia necesaria para cambiar colores
-    "django.contrib.admin",
-    "django.contrib.auth",
 ]
 
 MIDDLEWARE = [

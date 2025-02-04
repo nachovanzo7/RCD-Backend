@@ -8,19 +8,18 @@ class ClienteSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 class SolicitudClienteSerializer(serializers.ModelSerializer):
+    cliente_id = serializers.IntegerField(source='cliente.pk', read_only=True)
     class Meta:
         model = SolicitudCliente
-        fields = [
-            'estado', 'fecha_solicitud' ]
+        fields = [ 'estado', 'fecha_solicitud', 'cliente_id' ]
         read_only_fields = ['id', 'fecha_solicitud', 'estado']
 
 class SolicitudClienteAdminSerializer(serializers.ModelSerializer):
     """
     Serializador para el administrador, que permite actualizar el estado.
     """
+    cliente_id = serializers.IntegerField(source='cliente.pk', read_only=True)
     class Meta:
         model = SolicitudCliente
-        fields = [
-            'estado', 'fecha_solicitud'
-        ]
+        fields = [ 'estado', 'fecha_solicitud', 'cliente_id' ]
         read_only_fields = ['id', 'fecha_solicitud']

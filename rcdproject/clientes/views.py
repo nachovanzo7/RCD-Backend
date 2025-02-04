@@ -71,3 +71,14 @@ class RechazarSolicitudCliente(APIView):
         solicitud.save()
         
         return Response({'mensaje': 'Solicitud rechazada.'}, status=status.HTTP_200_OK)
+
+class ListarClientesAprobados(APIView):
+    """
+    Endpoint para listar los clientes que han sido aprobados.
+    Se consideran aprobados aquellos clientes cuya solicitud
+    tiene el estado 'aceptado'.
+    """
+    def get(self, request):
+        clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')
+        serializer = ClienteSerializer(clientes_aprobados, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
