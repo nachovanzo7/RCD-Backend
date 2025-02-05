@@ -75,8 +75,6 @@ class RechazarSolicitudCliente(APIView):
 class ListarClientesAprobados(APIView):
     """
     Endpoint para listar los clientes que han sido aprobados.
-    Se consideran aprobados aquellos clientes cuya solicitud
-    tiene el estado 'aceptado'.
     """
     def get(self, request):
         clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')
