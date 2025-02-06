@@ -75,3 +75,17 @@ class ListarObrasAprobadas(APIView):
         serializer = ObraSerializer(obras, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class ModificarDatosObra(APIView):
+    """
+    Modificar datos de obras
+    """
+    def patch(self, request, pk):
+        try:
+            obra = Obra.objects.get(pk=pk)
+        except Obra.DoesNotExist:
+            return Response({'error': 'Obra no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ObraSerializer(obra, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

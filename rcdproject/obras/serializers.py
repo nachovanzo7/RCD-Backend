@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Obra, SolicitudObra
-
+            
 class ObraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Obra

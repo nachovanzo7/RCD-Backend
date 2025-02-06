@@ -4,7 +4,8 @@ from .views import (
     ListarSolicitudesObra,
     AprobarSolicitudObra,
     RechazarSolicitudObra,
-    ListarObrasAprobadas
+    ListarObrasAprobadas,
+    ModificarDatosObra
 )
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('solicitudes/<int:pk>/aprobar/', AprobarSolicitudObra.as_view(), name='aprobar-solicitud-obra'),
     path('solicitudes/<int:pk>/rechazar/', RechazarSolicitudObra.as_view(), name='rechazar-solicitud-obra'),
     path('aprobadas/', ListarObrasAprobadas.as_view(), name='lista-obras-aprobadas'),
+    path('<int:pk>/actualizar/', ModificarDatosObra.as_view, name='actualizar-obras'),
 ]
