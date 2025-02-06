@@ -7,7 +7,7 @@ from clientes.models import Cliente
 
 class RegistroObra(APIView):
     """
-    Permite al cliente registrar una obra y crea automáticamente una solicitud en estado 'pendiente'.
+    Permite al cliente registrar una obra y crear una solicitud
     """
     def post(self, request):
         serializer_obra = ObraSerializer(data=request.data)
@@ -22,10 +22,10 @@ class RegistroObra(APIView):
                 'ID de cliente': cliente.id,
             }, status=status.HTTP_201_CREATED)
         return Response(serializer_obra.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class ListarSolicitudesObra(APIView):
     """
-    Lista todas las solicitudes de registro de obra (para el administrador).
+    Lista todas las solicitudes de obras para el administrador
     """
     def get(self, request):
         solicitudes = SolicitudObra.objects.all()
@@ -34,7 +34,7 @@ class ListarSolicitudesObra(APIView):
 
 class AprobarSolicitudObra(APIView):
     """
-    Permite al administrador aprobar una solicitud de obra.
+    Permite al administrador aceptar una solicitud de obra
     """
     def put(self, request, pk):
         try:
@@ -51,7 +51,7 @@ class AprobarSolicitudObra(APIView):
 
 class RechazarSolicitudObra(APIView):
     """
-    Permite al administrador rechazar una solicitud de obra.
+    Permite al administrador rechazar una solicitud de obra
     """
     def put(self, request, pk):
         try:
@@ -68,7 +68,7 @@ class RechazarSolicitudObra(APIView):
 
 class ListarObrasAprobadas(APIView):
     """
-    Endpoint que muestre una lista con las obras que fueron aprobadas
+    Muestra una lista con las obras que fueron aprobadas
     """
     def get(request, self):
         obras = Obra.objects.filter(solicitud__estado='aceptado')

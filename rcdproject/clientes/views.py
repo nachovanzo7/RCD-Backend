@@ -11,8 +11,7 @@ from .serializers import (
 
 class RegistroCliente(APIView):
     """
-    Endpoint para que un cliente se registre.
-    Crea un registro en Cliente y, a la vez, una SolicitudCliente en estado "pendiente".
+    Funcion para que el cliente se registre y envie una solicitud al administrador
     """
     def post(self, request):
         serializer_cliente = ClienteSerializer(data=request.data)
@@ -29,7 +28,7 @@ class RegistroCliente(APIView):
 
 class ListarSolicitudesCliente(APIView):
     """
-    Lista todas las solicitudes de alta de cliente (para el administrador).
+    Lista todas las solicitudes de clientes al administrador
     """
     def get(self, request):
         solicitudes = SolicitudCliente.objects.all()
@@ -38,7 +37,7 @@ class ListarSolicitudesCliente(APIView):
 
 class AprobarSolicitudCliente(APIView):
     """
-    Permite al administrador aprobar una solicitud.
+    Permite al administrador aceptar una solicitud
     """
     def put(self, request, pk):
         try:
@@ -56,7 +55,7 @@ class AprobarSolicitudCliente(APIView):
 
 class RechazarSolicitudCliente(APIView):
     """
-    Permite al administrador rechazar una solicitud.
+    Permite al administrador rechazar una solicitud
     """
     def put(self, request, pk):
         try:
@@ -74,7 +73,7 @@ class RechazarSolicitudCliente(APIView):
 
 class ListarClientesAprobados(APIView):
     """
-    Endpoint para listar los clientes que han sido aprobados.
+    Lista todos los clientes que fueron aceptados
     """
     def get(self, request):
         clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')
@@ -83,7 +82,7 @@ class ListarClientesAprobados(APIView):
 
 class ActualizarCliente(APIView):
     """
-    Endpoint para actualizar los datos de un cliente.
+    Actualizar datos de clientes
     """
     def patch(self, request, pk):
         try:
