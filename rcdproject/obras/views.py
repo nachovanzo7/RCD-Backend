@@ -84,9 +84,24 @@ class ModificarDatosObra(APIView):
         try:
             obra = Obra.objects.get(pk=pk)
         except Obra.DoesNotExist:
-            return Response({'error': 'Obra no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Obra no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
         serializer = ObraSerializer(obra, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EliminarObra(APIView):
+    """
+    Eliminar una obra
+    """
+    def delete(self, request, pk):
+        try:
+            obra = Obra.objects.get(pk=pk)
+        except Obra.DoesNotExist:
+            return Response({'error': 'Obra no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        obra.delete()
+        return Response({'mensaje': 'Obra eliminada.'}, status=status.HTTP_200_OK)
+    #revisar quien lo hace, si el cliente o el administrador
