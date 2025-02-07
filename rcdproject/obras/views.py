@@ -31,6 +31,7 @@ class ListarSolicitudesObra(APIView):
         solicitudes = SolicitudObra.objects.all()
         serializer = SolicitudObraAdminSerializer(solicitudes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    # falta retornar el id del cliente que genera la solicitud
 
 class AprobarSolicitudObra(APIView):
     """
@@ -45,7 +46,7 @@ class AprobarSolicitudObra(APIView):
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        solicitud.estado = 'Aprobado'
+        solicitud.estado = 'Aceptado'
         solicitud.save()
         return Response({'mensaje': 'Su solicitud de obra fue aprobada.'}, status=status.HTTP_200_OK)
 
@@ -70,8 +71,8 @@ class ListarObrasAprobadas(APIView):
     """
     Muestra una lista con las obras que fueron aprobadas
     """
-    def get(request, self):
-        obras = Obra.objects.filter(solicitud__estado='aceptado')
+    def get(self, request):
+        obras = Obra.objects.filter(solicitud__estado='Aceptado')
         serializer = ObraSerializer(obras, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
