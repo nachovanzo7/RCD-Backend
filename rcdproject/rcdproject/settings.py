@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'transportistas',
     'empresas_gestoras',
     'rest_framework',
+    'supervisor_obra',
     'obras',
 ]
 
