@@ -27,3 +27,19 @@ class ListarEmpresasGestoras(APIView):
         empresas = EmpresaGestora.objects.all()
         serializer = EmpresaGestoraSerializer(empresas, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ModificarDatosEmpresaGestora(APIView):
+    """
+    Permite modificar los datos de una empresa gestora
+    """
+    def patch(self, request, pk):
+        try:
+            empresa = EmpresaGestora.objects.get(pk=pk)
+        except EmpresaGestora.DoesNotExist:
+            return Response({'error': 'La empresa gestora no fue encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = EmpresaGestoraSerializer(empresa, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -25,6 +25,21 @@ class ListarTransportistas(APIView):
     """
     def get(self, request):
         transportistas = Transportista.objects.all()
-        # Se agrega el contexto en la instanciación del serializer.
         serializer = TransportistaSerializer(transportistas, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ModificarDatosTransportista(APIView):
+    """
+    Permite modificar los datos de un transportista
+    """
+    def patch(self, request, pk):
+        try:
+            transportista = Transportista.objects.get(pk=pk)
+        except Transportista.DoesNotExist:
+            return Response({'error': 'El transportista no fue encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = TransportistaSerializer(transportista, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
