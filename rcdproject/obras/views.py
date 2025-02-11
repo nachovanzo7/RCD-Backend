@@ -105,3 +105,4 @@ class EliminarObra(APIView):
         obra.delete()
         return Response({'mensaje': 'Obra eliminada.'}, status=status.HTTP_200_OK)
     #revisar quien lo hace, si el cliente o el administrador
+    

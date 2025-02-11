@@ -43,3 +43,16 @@ class ModificarDatosSupervisorObra(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EliminarSupervisorObra(APIView):
+    """
+    Elimina un supervisor de obra
+    """
+    def delete(self, request, pk):
+        try:
+            supervisor = SupervisorObra.objects.get(pk=pk)
+        except SupervisorObra.DoesNotExist:
+            return Response({'error': 'El supervisor de obra no fue encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        supervisor.delete()
+        return Response({'mensaje': 'El supervisor de obra fue eliminado.'}, status=status.HTTP_200_OK)

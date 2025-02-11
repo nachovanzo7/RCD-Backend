@@ -43,3 +43,17 @@ class ModificarDatosEmpresaGestora(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EliminarEmpresaGestora(APIView):
+    """
+    Elimina a una empresa gestora
+    """
+    def delete(self, request, pk):
+        try:
+            empresa = EmpresaGestora.objects.get(pk=pk)
+        except EmpresaGestora.DoesNotExist:
+            return Response({'error': 'La empresa gestora no fue encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        empresa.delete()
+        return Response({'mensaje': 'La empresa gestora fue eliminada.'}, status=status.HTTP_200_OK)
+    

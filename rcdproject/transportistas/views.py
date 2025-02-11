@@ -43,3 +43,16 @@ class ModificarDatosTransportista(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EliminarTransportista(APIView):
+    """
+    Permite eliminar un transportista
+    """
+    def delete(self, request, pk):
+        try:
+            transportista = Transportista.objects.get(pk=pk)
+        except Transportista.DoesNotExist:
+            return Response({'error': 'El transportista no fue encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        transportista.delete()
+        return Response({'mensaje': 'El transportista fue eliminado.'}, status=status.HTTP_200_OK)
