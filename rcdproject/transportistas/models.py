@@ -10,9 +10,13 @@ class Transportista(models.Model):
         ('mezclados', 'Mezclados'),
         ('peligrosos', 'Peligrosos'),
     ]
-    
+    ESTADO_CHOICES = [
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    ]
     nombre = models.CharField(max_length=200)
     contacto = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES)
     tipo_vehiculo = models.CharField(max_length=100)
     tipo_material = models.CharField(max_length=20, choices=TIPOS_MATERIAL_CHOICES)
