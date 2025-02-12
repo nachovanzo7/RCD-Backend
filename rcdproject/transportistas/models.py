@@ -14,6 +14,7 @@ class Transportista(models.Model):
         ('activo', 'Activo'),
         ('inactivo', 'Inactivo'),
     ]
+    id = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=200)
     contacto = models.CharField(max_length=100)
     email = models.EmailField(unique=True)

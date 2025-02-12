@@ -3,6 +3,7 @@ from obras.models import Obra
 
 
 class PuntoLimpio(models.Model):
+    id = models.AutoField(primary_key=True)
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='puntos_limpios')
     ubicacion = models.CharField("Ubicación", max_length=200)
     cantidad = models.IntegerField("Cantidad")
