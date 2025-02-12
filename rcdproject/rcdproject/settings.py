@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'supervisor_obra',
     'obras',
     'puntolimpio',
+    'materiales',
 ]
 
 MIDDLEWARE = [
