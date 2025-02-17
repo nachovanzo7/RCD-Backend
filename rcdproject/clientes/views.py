@@ -28,7 +28,7 @@ class ListarSolicitudesCliente(APIView):
     Lista todas las solicitudes de clientes al administrador
     """
     def get(self, request):
-        solicitudes = SolicitudCliente.objects.all()
+        solicitudes = SolicitudCliente.objects.filter(estado='pendiente')
         serializer = SolicitudClienteAdminSerializer(solicitudes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
