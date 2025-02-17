@@ -26,4 +26,6 @@ urlpatterns = [
     path('api/supervisores/', include('supervisor_obra.urls')),
     path('api/puntolimpio/', include('puntolimpio.urls')),
     path('api/materiales/', include('materiales.urls')),
+    path('api/visitas/', include('visitas.urls')),
+    path('api/tecnicos/', include('tecnicos.urls')),
 ]

@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'supervisor_obra',
     'obras',
+    'tecnicos',
+    'visitas',
     'puntolimpio',
     'materiales',
 ]
