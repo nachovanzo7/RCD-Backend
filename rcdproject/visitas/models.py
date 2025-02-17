@@ -9,3 +9,4 @@ class Visita(models.Model):
     fecha = models.DateField("Fecha de Visita")
     motivo = models.CharField("Motivo", max_length=200)
     observaciones = models.TextField("Observaciones", blank=True, null=True)
+    acciones_tomadas = models.TextField("Acciones tomadas", blank=True, null=True)

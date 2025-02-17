@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     'tecnicos',
     'visitas',
     'fotos',
+    'capacitacion',
+    'condiciondeobras',
+    'coordinacionretiro',
     'puntolimpio',
     'materiales',
 ]

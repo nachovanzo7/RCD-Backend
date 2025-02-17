@@ -15,6 +15,7 @@ class Material(models.Model):
         ('mezclados', 'Mezclados'),
         ('peligrosos', 'Peligrosos'),
     ]
+    # id_obra
     punto_limpio = models.ForeignKey(PuntoLimpio, on_delete=models.CASCADE, related_name='materiales', verbose_name="Punto Limpio")
     transportista = models.ForeignKey(Transportista, on_delete=models.CASCADE, related_name='materiales', verbose_name="Transportista")
     descripcion = models.TextField("Descripción")
