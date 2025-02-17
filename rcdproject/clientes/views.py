@@ -77,6 +77,20 @@ class ListarClientesAprobados(APIView):
         serializer = ClienteSerializer(clientes_aprobados, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class ObtenerCliente(APIView):
+    """
+    Devuelve la información de un cliente según su ID.
+    """
+    def get(self, request, pk):
+        try:
+            cliente = Cliente.objects.get(pk=pk)
+        except Cliente.DoesNotExist:
+            return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ClienteSerializer(cliente, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ActualizarCliente(APIView):
     """
     Actualizar datos de clientes
