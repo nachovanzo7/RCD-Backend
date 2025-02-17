@@ -19,7 +19,8 @@ class SolicitudClienteAdminSerializer(serializers.ModelSerializer):
     Serializador para el administrador, que permite actualizar el estado.
     """
     cliente_id = serializers.IntegerField(source='cliente.pk', read_only=True)
+    cliente_nombre = serializers.CharField(source='cliente.nombre', read_only=True)
     class Meta:
         model = SolicitudCliente
-        fields = [ 'estado', 'fecha_solicitud', 'cliente_id' ]
+        fields = [ 'estado', 'fecha_solicitud', 'cliente_id', 'cliente_nombre' ]
         read_only_fields = ['id', 'fecha_solicitud']

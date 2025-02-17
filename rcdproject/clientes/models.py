@@ -24,4 +24,3 @@ class SolicitudCliente(models.Model):
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
     cliente = models.OneToOneField(Cliente, on_delete=models.CASCADE, related_name='solicitud', primary_key=True) # revisar id (si puede ser el de cliente mejor)
 
-    #vincular con obra y retiro

@@ -25,12 +25,13 @@ class RegistroCliente(APIView):
 
 class ListarSolicitudesCliente(APIView):
     """
-    Lista todas las solicitudes de clientes al administrador
+    Lista todas las solicitudes de clientes al administrador.
     """
     def get(self, request):
         solicitudes = SolicitudCliente.objects.filter(estado='pendiente')
         serializer = SolicitudClienteAdminSerializer(solicitudes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class AprobarSolicitudCliente(APIView):
     """
@@ -78,15 +79,23 @@ class ListarClientesAprobados(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ObtenerCliente(APIView):
+class DetalleCliente(APIView):
     """
-    Devuelve la información de un cliente según su ID.
+    Devuelve la información de un cliente según su ID,
+    solo si la solicitud de registro está aceptada.
     """
     def get(self, request, pk):
         try:
             cliente = Cliente.objects.get(pk=pk)
         except Cliente.DoesNotExist:
             return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            if cliente.solicitud.estado != 'aceptado':
+                return Response({'error': 'El cliente no está registrado (estado pendiente o rechazado).'}, 
+                                status=status.HTTP_403_FORBIDDEN)
+        except SolicitudCliente.DoesNotExist:
+            return Response({'error': 'El cliente no está registrado.'}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = ClienteSerializer(cliente, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
