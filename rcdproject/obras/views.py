@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
 from .models import Obra, SolicitudObra
 from .serializers import ObraSerializer, SolicitudObraSerializer, SolicitudObraAdminSerializer
 from clientes.models import Cliente
@@ -66,6 +67,7 @@ class AprobarSolicitudObra(APIView):
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
         solicitud.estado = 'Aceptado'
+        solicitud.fecha_solicitud = timezone.now()
         solicitud.save()
         return Response({'mensaje': 'Su solicitud de obra fue aprobada.'}, status=status.HTTP_200_OK)
 

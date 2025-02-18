@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
 from .models import Cliente, SolicitudCliente
 from .serializers import ClienteSerializer, SolicitudClienteSerializer, SolicitudClienteAdminSerializer
 
@@ -28,7 +29,7 @@ class ListarSolicitudesCliente(APIView):
     Lista todas las solicitudes de clientes al administrador.
     """
     def get(self, request):
-        solicitudes = SolicitudCliente.objects.filter(estado='pendiente')
+        solicitudes = SolicitudCliente.objects.all()
         serializer = SolicitudClienteAdminSerializer(solicitudes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -47,6 +48,7 @@ class AprobarSolicitudCliente(APIView):
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
         solicitud.estado = 'aceptado'
+        solicitud.fecha_solicitud = timezone.now() #from django.utils import timezone
         solicitud.save()
         
         return Response({'mensaje': 'Su solicitud fue aprobada.'}, status=status.HTTP_200_OK)
