@@ -25,3 +25,20 @@ class ListarPuntosLimpios(APIView):
         puntos = PuntoLimpio.objects.all()
         serializer = PuntoLimpioSerializer(puntos, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ActualizarPuntoLimpio(APIView):
+    """
+    Permite actualizar un punto limpio existente.
+    Se usa PATCH para actualización parcial.
+    """
+    def patch(self, request, pk):
+        try:
+            punto = PuntoLimpio.objects.get(pk=pk)
+        except PuntoLimpio.DoesNotExist:
+            return Response({'error': 'Punto limpio no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PuntoLimpioSerializer(punto, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -17,7 +17,6 @@ class PuntoLimpio(models.Model):
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='puntos_limpios')
     ubicacion = models.CharField("Ubicación", max_length=200, default="No especificado")
     accesibilidad = models.CharField("Accesibilidad", max_length=20, choices=ACCESIBILIDAD_CHOICES, default='en_planta_baja')
-    cantidad = models.IntegerField("Cantidad", default=0)
     metros_cuadrados = models.DecimalField("Metros Cuadrados", max_digits=10, decimal_places=2, default=0)
     estructura = models.CharField("Estructura", max_length=200, default="No especificado")
     tipo_contenedor = models.CharField("Tipo de Contenedor", max_length=200, default="No especificado")
