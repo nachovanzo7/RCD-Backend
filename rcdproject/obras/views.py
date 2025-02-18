@@ -4,23 +4,42 @@ from rest_framework import status
 from .models import Obra, SolicitudObra
 from .serializers import ObraSerializer, SolicitudObraSerializer, SolicitudObraAdminSerializer
 from clientes.models import Cliente
+from puntolimpio.models import PuntoLimpio
 
 class RegistroObra(APIView):
     """
-    Permite al cliente registrar una obra y crear una solicitud
+    Permite al cliente registrar una obra, creando automáticamente la solicitud
+    y los puntos limpios asociados según la cantidad indicada.
     """
     def post(self, request):
+        # Extraer la cantidad de puntos limpios del request; si no se envía, por defecto se crea 1
+        cantidad_puntos = int(request.data.pop("cantidad_puntos_limpios", 1))
+        
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
             obra = serializer_obra.save()
             solicitud = SolicitudObra.objects.create(obra=obra)
             cliente = Cliente.objects.get(pk=obra.cliente.id)
-            return Response({
-                'mensaje': 'Obra registrada, pendiente de aprobación.',
-                'obra': ObraSerializer(obra).data,
-                'solicitud': SolicitudObraSerializer(solicitud).data,
-                'ID de cliente': cliente.id,
-            }, status=status.HTTP_201_CREATED)
+            
+            # Crear la cantidad indicada de puntos limpios
+            puntos_ids = []
+            for _ in range(cantidad_puntos):
+                punto = PuntoLimpio.objects.create(
+                    obra=obra,
+                    ubicacion="No especificado",
+                    accesibilidad="en_planta_baja",
+                    cantidad=0,
+                    metros_cuadrados=0,
+                    estructura="No especificado",
+                    tipo_contenedor="No especificado",
+                    puntaje=0,
+                    señaletica=True,
+                    observaciones="",
+                    clasificacion="no_aplica"  # Asegúrate de que 'no_aplica' esté entre los choices
+                )
+                puntos_ids.append(punto.id)
+            
+            return Response({'mensaje': 'Obra registrada, pendiente de aprobación.','obra': ObraSerializer(obra, context={'request': request}).data,'solicitud': SolicitudObraSerializer(solicitud, context={'request': request}).data,'ID de cliente': cliente.id,'puntos_limpios_creados': puntos_ids}, status=status.HTTP_201_CREATED)
         return Response(serializer_obra.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListarSolicitudesObra(APIView):
@@ -104,5 +123,4 @@ class EliminarObra(APIView):
         
         obra.delete()
         return Response({'mensaje': 'Obra eliminada.'}, status=status.HTTP_200_OK)
-    #revisar quien lo hace, si el cliente o el administrador
     
