@@ -82,7 +82,7 @@ class RegistroObra(APIView):
                             material_data["transportista"] = transportista_instancia
                         
                         material = Material.objects.create(obra=obra, **material_data)
-                        materiales_ids.append(material.id)
+                        materiales_ids.append({'id': material.id, 'tipo de material': material.tipo_material})
                     except ValidationError as e:
                         return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
             
