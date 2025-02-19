@@ -16,22 +16,17 @@ class RegistroObra(APIView):
     y, opcionalmente, los puntos limpios y materiales asociados según los datos anidados.
     """
     def post(self, request):
-        # Extraer la lista de puntos limpios del request (si se envía)
         puntos_data = request.data.pop("puntos_limpios", None)
-        # Extraer la cantidad de puntos limpios si no se envían datos anidados
         cantidad_puntos = int(request.data.pop("cantidad_puntos_limpios", 1))
-        # Extraer la lista de materiales del request (si se envía)
         materiales_data = request.data.pop("materiales", None)
         
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
             obra = serializer_obra.save()
-            # Crear la solicitud de obra
             solicitud = SolicitudObra.objects.create(obra=obra)
             cliente = Cliente.objects.get(pk=obra.cliente.id)
             
             puntos_ids = []
-            # Crear puntos limpios
             if puntos_data:
                 for punto_data in puntos_data:
                     punto = PuntoLimpio.objects.create(obra=obra, **punto_data)
@@ -56,7 +51,6 @@ class RegistroObra(APIView):
             if materiales_data:
                 for material_data in materiales_data:
                     try:
-                        # Verificar si se envió el campo "punto_limpio"
                         if "punto_limpio" not in material_data:
                             punto_default = obra.puntos_limpios.first()
                             if not punto_default:
@@ -66,7 +60,6 @@ class RegistroObra(APIView):
                                 )
                             material_data["punto_limpio"] = punto_default
                         else:
-                            # Si se envía, convertir el ID a instancia
                             punto_id = material_data["punto_limpio"]
                             try:
                                 punto_inst = PuntoLimpio.objects.get(pk=punto_id)
@@ -77,7 +70,6 @@ class RegistroObra(APIView):
                                 )
                             material_data["punto_limpio"] = punto_inst
                         
-                        # Convertir el ID del transportista a instancia
                         transportista_id = material_data.get("transportista")
                         if transportista_id:
                             try:
@@ -89,7 +81,6 @@ class RegistroObra(APIView):
                                 )
                             material_data["transportista"] = transportista_instancia
                         
-                        # Crear el material asociado a la obra
                         material = Material.objects.create(obra=obra, **material_data)
                         materiales_ids.append(material.id)
                     except ValidationError as e:
@@ -114,7 +105,6 @@ class ListarSolicitudesObra(APIView):
         solicitudes = SolicitudObra.objects.all()
         serializer = SolicitudObraAdminSerializer(solicitudes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    # falta retornar el id del cliente que genera la solicitud
 
 class AprobarSolicitudObra(APIView):
     """
@@ -148,15 +138,11 @@ class RechazarSolicitudObra(APIView):
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Actualizar estado a "rechazado"
         solicitud.estado = 'rechazado'
         solicitud.save()
         
-        # Obtener la obra asociada
         obra = solicitud.obra
-        # Eliminar los puntos limpios asociados a la obra
         obra.puntos_limpios.all().delete()
-        # Eliminar los materiales asociados a la obra
         obra.materiales.all().delete()
         
         return Response(
