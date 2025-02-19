@@ -1,6 +1,7 @@
 from django.db import models
 from django.db import models
-from puntolimpio.models import PuntoLimpio  
+from puntolimpio.models import PuntoLimpio
+from obras.models import Obra  
 from transportistas.models import Transportista 
 from django.core.exceptions import ValidationError
 
@@ -15,7 +16,7 @@ class Material(models.Model):
         ('mezclados', 'Mezclados'),
         ('peligrosos', 'Peligrosos'),
     ]
-    # id_obra
+    obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='materiales', verbose_name="Obra")
     punto_limpio = models.ForeignKey(PuntoLimpio, on_delete=models.CASCADE, related_name='materiales', verbose_name="Punto Limpio")
     transportista = models.ForeignKey(Transportista, on_delete=models.CASCADE, related_name='materiales', verbose_name="Transportista")
     descripcion = models.TextField("Descripción")
