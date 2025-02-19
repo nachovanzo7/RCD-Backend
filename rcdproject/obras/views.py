@@ -97,7 +97,8 @@ class AprobarSolicitudObra(APIView):
 
 class RechazarSolicitudObra(APIView):
     """
-    Permite al administrador rechazar una solicitud de obra
+    Permite al administrador rechazar una solicitud de obra.
+    Al rechazar, se eliminan los puntos limpios asociados a la obra.
     """
     def put(self, request, pk):
         try:
@@ -108,9 +109,15 @@ class RechazarSolicitudObra(APIView):
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        solicitud.estado = 'Rechazado'
+        # Actualizar estado a "rechazado"
+        solicitud.estado = 'rechazado'
         solicitud.save()
-        return Response({'mensaje': 'Su solicitud de obra fue rechazada.'}, status=status.HTTP_200_OK)
+        
+        # Eliminar los puntos limpios asociados a la obra
+        obra = solicitud.obra
+        obra.puntos_limpios.all().delete()
+        
+        return Response({'mensaje': 'Su solicitud de obra fue rechazada y se eliminaron los puntos limpios asociados.'}, status=status.HTTP_200_OK)
 
 class ListarObrasAprobadas(APIView):
     """
