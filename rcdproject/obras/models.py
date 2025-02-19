@@ -10,6 +10,7 @@ class Obra(models.Model):
     direccion = models.CharField("Dirección", max_length=200, null=True, blank=True, default="No especificado")
     m2_obra = models.DecimalField("M2 Obra", max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     cant_pisos = models.IntegerField("Cantidad de Pisos", null=True, blank=True, default=0)
+    cronograma = models.TextField()
     pedido = models.CharField("Pedido", max_length=200, null=True, blank=True, default="No especificado")
     inicio_obra = models.DateField("Inicio de Obra", null=True, blank=True)
     duracion_obra = models.CharField("Duración de Obra", max_length=100, null=True, blank=True, default="No especificado")

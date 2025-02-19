@@ -10,17 +10,36 @@ from puntolimpio.models import PuntoLimpio
 class RegistroObra(APIView):
     """
     Permite al cliente registrar una obra, creando automáticamente la solicitud
-    y los puntos limpios asociados según la cantidad indicada.
+    y los puntos limpios asociados según la cantidad indicada. Solo se permite
+    el registro si la solicitud del cliente está aceptada.
     """
     def post(self, request):
+        # Extraer el id del cliente del request
+        cliente_id = request.data.get("cliente")
+        if not cliente_id:
+            return Response({'error': 'El campo cliente es obligatorio.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            cliente = Cliente.objects.get(pk=cliente_id)
+        except Cliente.DoesNotExist:
+            return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Verificar que el cliente tenga una solicitud y que su estado sea "Aceptado"
+        try:
+            if cliente.solicitud.estado != 'aceptado':
+                return Response({'error': 'El cliente no está habilitado para registrar obras. Su solicitud aún no ha sido aceptada.'}, 
+                                status=status.HTTP_403_FORBIDDEN)
+        except:
+            return Response({'error': 'El cliente no tiene solicitud registrada.'}, status=status.HTTP_400_BAD_REQUEST)
+        
         # Extraer la cantidad de puntos limpios del request; si no se envía, por defecto se crea 1
         cantidad_puntos = int(request.data.pop("cantidad_puntos_limpios", 1))
         
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
             obra = serializer_obra.save()
+            # Crear la solicitud de obra (esta se crea siempre, pero no se usará si el cliente no tiene solicitud aceptada)
             solicitud = SolicitudObra.objects.create(obra=obra)
-            cliente = Cliente.objects.get(pk=obra.cliente.id)
             
             # Crear la cantidad indicada de puntos limpios
             puntos_ids = []
@@ -29,7 +48,6 @@ class RegistroObra(APIView):
                     obra=obra,
                     ubicacion="No especificado",
                     accesibilidad="en_planta_baja",
-                    cantidad=0,
                     metros_cuadrados=0,
                     estructura="No especificado",
                     tipo_contenedor="No especificado",
@@ -40,7 +58,13 @@ class RegistroObra(APIView):
                 )
                 puntos_ids.append(punto.id)
             
-            return Response({'mensaje': 'Obra registrada, pendiente de aprobación.','obra': ObraSerializer(obra, context={'request': request}).data,'solicitud': SolicitudObraSerializer(solicitud, context={'request': request}).data,'ID de cliente': cliente.id,'puntos_limpios_creados': puntos_ids}, status=status.HTTP_201_CREATED)
+            return Response({
+                'mensaje': 'Obra registrada, pendiente de aprobación.',
+                'obra': ObraSerializer(obra, context={'request': request}).data,
+                'solicitud': SolicitudObraSerializer(solicitud, context={'request': request}).data,
+                'ID de cliente': cliente.id,
+                'puntos_limpios_creados': puntos_ids
+            }, status=status.HTTP_201_CREATED)
         return Response(serializer_obra.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListarSolicitudesObra(APIView):

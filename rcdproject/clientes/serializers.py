@@ -4,7 +4,7 @@ from .models import Cliente, SolicitudCliente
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = [ 'id', 'nombre', 'direccion', 'contacto', 'nombre_contacto', 'fecha_ingreso', 'razon_social', 'direccion_fiscal', 'rut', 'mail', 'cronograma' ]
+        fields = [ 'id', 'nombre', 'direccion', 'contacto', 'nombre_contacto', 'fecha_ingreso', 'razon_social', 'direccion_fiscal', 'rut', 'mail' ]
         read_only_fields = ['id']
 
 class SolicitudClienteSerializer(serializers.ModelSerializer):

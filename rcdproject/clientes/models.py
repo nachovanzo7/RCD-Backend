@@ -11,7 +11,7 @@ class Cliente(models.Model):
     direccion_fiscal = models.CharField(max_length=300)
     rut = models.CharField(max_length=300)
     mail = models.EmailField(unique=True)
-    cronograma = models.TextField()
+    
 
 
 class SolicitudCliente(models.Model):
