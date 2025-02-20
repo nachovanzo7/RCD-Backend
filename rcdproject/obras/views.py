@@ -12,14 +12,12 @@ from transportistas.models import Transportista
 
 class RegistroObra(APIView):
     """
-    Permite al cliente registrar una obra, creando automáticamente la solicitud,
-    y, opcionalmente, los puntos limpios y materiales asociados según los datos anidados.
+    Permite registrar una obra, creando la solicitud y, opcionalmente, los puntos limpios y materiales asociados.
+    Se espera que en cada punto limpio anidado se incluya un array "materiales" con los tipos de material (ej. "madera").
     """
     def post(self, request):
         puntos_data = request.data.pop("puntos_limpios", None)
         cantidad_puntos = int(request.data.pop("cantidad_puntos_limpios", 1))
-        materiales_data = request.data.pop("materiales", None)
-        
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
             obra = serializer_obra.save()
@@ -27,11 +25,46 @@ class RegistroObra(APIView):
             cliente = Cliente.objects.get(pk=obra.cliente.id)
             
             puntos_ids = []
+            materiales_ids = []
             if puntos_data:
                 for punto_data in puntos_data:
+                    # Extraemos la lista de materiales para este punto
+                    materiales_list = punto_data.pop("materiales", [])
+                    # Si se envía "ventilacion" en los datos del punto, se elimina,
+                    # ya que ese campo no pertenece al modelo PuntoLimpio.
+                    punto_data.pop("ventilacion", None)
+                    
+                    # Creamos el PuntoLimpio sin el campo 'ventilacion'
                     punto = PuntoLimpio.objects.create(obra=obra, **punto_data)
                     puntos_ids.append(punto.id)
+                    
+                    for tipo_material in materiales_list:
+                        default_transportista = Transportista.objects.filter(tipo_material=tipo_material).first()
+                        if not default_transportista:
+                            return Response(
+                                {"error": f"Es necesario dar de alta un transportista para el material: '{tipo_material}'."},
+                                status=status.HTTP_400_BAD_REQUEST
+                            )
+                        try:
+                            # Si el material es 'peligrosos', asignamos ventilacion = "Necesario"
+                            ventilacion_valor = "Necesario" if tipo_material == "peligrosos" else ""
+                            material = Material.objects.create(
+                                obra=obra,
+                                punto_limpio=punto,
+                                transportista=default_transportista,
+                                descripcion="No especificado",
+                                proteccion="No especificado",
+                                tipo_contenedor=punto.tipo_contenedor,
+                                estado_del_contenedor="No especificado",
+                                esta_lleno=False,
+                                tipo_material=tipo_material,
+                                ventilacion=ventilacion_valor
+                            )
+                            materiales_ids.append({'id': material.id, 'tipo_material': material.tipo_material})
+                        except ValidationError as e:
+                            return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
             else:
+                # Si no se envían puntos limpios, se crea uno por defecto
                 for _ in range(cantidad_puntos):
                     punto = PuntoLimpio.objects.create(
                         obra=obra,
@@ -46,45 +79,6 @@ class RegistroObra(APIView):
                         clasificacion="no_aplica"
                     )
                     puntos_ids.append(punto.id)
-            
-            materiales_ids = []
-            if materiales_data:
-                for material_data in materiales_data:
-                    try:
-                        if "punto_limpio" not in material_data:
-                            punto_default = obra.puntos_limpios.first()
-                            if not punto_default:
-                                return Response(
-                                    {'error': 'No se ha creado ningún punto limpio para asignar al material.'},
-                                    status=status.HTTP_400_BAD_REQUEST
-                                )
-                            material_data["punto_limpio"] = punto_default
-                        else:
-                            punto_id = material_data["punto_limpio"]
-                            try:
-                                punto_inst = PuntoLimpio.objects.get(pk=punto_id)
-                            except PuntoLimpio.DoesNotExist:
-                                return Response(
-                                    {'error': f'Punto limpio con id {punto_id} no existe.'},
-                                    status=status.HTTP_400_BAD_REQUEST
-                                )
-                            material_data["punto_limpio"] = punto_inst
-                        
-                        transportista_id = material_data.get("transportista")
-                        if transportista_id:
-                            try:
-                                transportista_instancia = Transportista.objects.get(pk=transportista_id)
-                            except Transportista.DoesNotExist:
-                                return Response(
-                                    {'error': f'Transportista con id {transportista_id} no existe.'},
-                                    status=status.HTTP_400_BAD_REQUEST
-                                )
-                            material_data["transportista"] = transportista_instancia
-                        
-                        material = Material.objects.create(obra=obra, **material_data)
-                        materiales_ids.append({'id': material.id, 'tipo de material': material.tipo_material})
-                    except ValidationError as e:
-                        return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
             
             return Response({
                 'mensaje': 'Obra registrada, pendiente de aprobación.',

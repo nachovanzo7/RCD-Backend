@@ -10,9 +10,10 @@ class ObraSerializer(serializers.ModelSerializer):
 
 class SolicitudObraSerializer(serializers.ModelSerializer):
     obra = serializers.IntegerField(source='obra.id', read_only=True)
+    nombre_obra = serializers.CharField(source='obra.nombre_obra', read_only=True)
     class Meta:
         model = SolicitudObra
-        fields = ['estado', 'fecha_solicitud', 'obra' ]
+        fields = ['estado', 'fecha_solicitud', 'obra', 'nombre_obra']
         read_only_fields = ['fecha_solicitud', 'estado', 'obra' ]
 
 class SolicitudObraAdminSerializer(serializers.ModelSerializer):
