@@ -86,7 +86,7 @@ class Formularios(models.Model):
     plastico_observaciones = models.CharField("Plástico", max_length=500, choices=OBSERVACIONES_CHOICES_PLASTICO)
     plastico_otras_observaciones = models.CharField("Plástico", max_length=500)
     papel_y_carton = models.CharField("Papel y cartón", max_length=200, choices=HAY_TIPO_MATERIAL_CHOICES)
-    OBSERVACIONES_CHOICES_PLASTICO = [
+    OBSERVACIONES_CHOICES_PAPEL_Y_CARTON = [
         ('vacio', 'Vacio'),
         ('lleno', 'Lleno'),
         ('falta_proteccion_interperie', 'Falta protección interperie'),
@@ -97,7 +97,7 @@ class Formularios(models.Model):
         ('no_esta_implementada_la_fraccion', 'No está implementada la fracción'),
         ('otro', 'Otro'),
     ]
-    papel_y_carton_observaciones = models.CharField("Papel y cartón", max_length=500, choices=OBSERVACIONES_CHOICES_PLASTICO)
+    papel_y_carton_observaciones = models.CharField("Papel y cartón", max_length=500, choices=OBSERVACIONES_CHOICES_PAPEL_Y_CARTON)
     papel_y_carton_otras_observaciones = models.CharField("Papel y cartón", max_length=500)
     metales = models.CharField("Metales", max_length=200, choices=HAY_TIPO_MATERIAL_CHOICES)
     OBSERVACIONES_CHOICES_METALES = [
@@ -119,7 +119,7 @@ class Formularios(models.Model):
         ('contaminado_con_aceite_pintura_pegamento', 'Contaminado con aceite, pintura, pegamento'),
         ('otro', 'Otro'),
     ]
-    madera = models.CharField("Madera", max_length=500, choices=OBSERVACIONES_CHOICES_MADERA)
+    madera_observaciones = models.CharField("Madera", max_length=500, choices=OBSERVACIONES_CHOICES_MADERA)
     madera_otras_observaciones = models.CharField("Madera", max_length=500)
     mezclados = models.CharField("Mezclados", max_length=200, choices=HAY_TIPO_MATERIAL_CHOICES)
     mezclados_separaciones = models.CharField("Mezclados", max_length=200)
