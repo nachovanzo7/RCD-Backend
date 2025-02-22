@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'visitas',
     'fotos',
     'usuarios',
+    'formularios',
     'capacitacion',
     'condiciondeobras',
     'coordinacionretiro',
