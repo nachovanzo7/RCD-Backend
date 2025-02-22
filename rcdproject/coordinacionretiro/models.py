@@ -7,8 +7,8 @@ from materiales.models import Material
 class CoordinacionRetiro(models.Model):
     ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),
-        ('en_proceso', 'En Proceso'),
-        ('completado', 'Completado'),
+        ('aceptado', 'Aceptado'),
+        ('rechazado', 'Rechazado'),
     ]
     descripcion = models.TextField("Descripción")
     observaciones = models.TextField("Observaciones", blank=True, null=True)

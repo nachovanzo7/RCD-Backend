@@ -12,81 +12,23 @@ from transportistas.models import Transportista
 
 class RegistroObra(APIView):
     """
-    Permite registrar una obra, creando la solicitud y, opcionalmente, los puntos limpios y materiales asociados.
-    Se espera que en cada punto limpio anidado se incluya un array "materiales" con los tipos de material (ej. "madera").
+    Permite al cliente registrar una obra, creando automáticamente la solicitud 
+    con estado "pendiente". Los puntos limpios y los materiales se registrarán
+    por separado.
     """
     def post(self, request):
-        puntos_data = request.data.pop("puntos_limpios", None)
-        cantidad_puntos = int(request.data.pop("cantidad_puntos_limpios", 1))
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
             obra = serializer_obra.save()
+            # Crear la solicitud de obra con estado "pendiente"
             solicitud = SolicitudObra.objects.create(obra=obra)
             cliente = Cliente.objects.get(pk=obra.cliente.id)
-            
-            puntos_ids = []
-            materiales_ids = []
-            if puntos_data:
-                for punto_data in puntos_data:
-                    # Extraemos la lista de materiales para este punto
-                    materiales_list = punto_data.pop("materiales", [])
-                    # Si se envía "ventilacion" en los datos del punto, se elimina,
-                    # ya que ese campo no pertenece al modelo PuntoLimpio.
-                    punto_data.pop("ventilacion", None)
-                    
-                    # Creamos el PuntoLimpio sin el campo 'ventilacion'
-                    punto = PuntoLimpio.objects.create(obra=obra, **punto_data)
-                    puntos_ids.append(punto.id)
-                    
-                    for tipo_material in materiales_list:
-                        default_transportista = Transportista.objects.filter(tipo_material=tipo_material).first()
-                        if not default_transportista:
-                            return Response(
-                                {"error": f"Es necesario dar de alta un transportista para el material: '{tipo_material}'."},
-                                status=status.HTTP_400_BAD_REQUEST
-                            )
-                        try:
-                            # Si el material es 'peligrosos', asignamos ventilacion = "Necesario"
-                            ventilacion_valor = "Necesario" if tipo_material == "peligrosos" else ""
-                            material = Material.objects.create(
-                                obra=obra,
-                                punto_limpio=punto,
-                                transportista=default_transportista,
-                                descripcion="No especificado",
-                                proteccion="No especificado",
-                                tipo_contenedor=punto.tipo_contenedor,
-                                estado_del_contenedor="No especificado",
-                                esta_lleno=False,
-                                tipo_material=tipo_material,
-                                ventilacion=ventilacion_valor
-                            )
-                            materiales_ids.append({'id': material.id, 'tipo_material': material.tipo_material})
-                        except ValidationError as e:
-                            return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                # Si no se envían puntos limpios, se crea uno por defecto
-                for _ in range(cantidad_puntos):
-                    punto = PuntoLimpio.objects.create(
-                        obra=obra,
-                        ubicacion="No especificado",
-                        accesibilidad="en_planta_baja",
-                        metros_cuadrados=0,
-                        estructura="No especificado",
-                        tipo_contenedor="No especificado",
-                        puntaje=0,
-                        señaletica=True,
-                        observaciones="",
-                        clasificacion="no_aplica"
-                    )
-                    puntos_ids.append(punto.id)
             
             return Response({
                 'mensaje': 'Obra registrada, pendiente de aprobación.',
                 'obra': ObraSerializer(obra, context={'request': request}).data,
                 'solicitud': SolicitudObraSerializer(solicitud, context={'request': request}).data,
-                'ID de cliente': cliente.id,
-                'puntos_limpios_creados': puntos_ids,
-                'materiales_creados': materiales_ids
+                'ID de cliente': cliente.id
             }, status=status.HTTP_201_CREATED)
         return Response(serializer_obra.errors, status=status.HTTP_400_BAD_REQUEST)
 
