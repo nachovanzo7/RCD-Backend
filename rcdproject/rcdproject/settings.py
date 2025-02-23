@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'notificaciones',
 ]
 
+AUTH_USER_MODEL = 'usuarios.Usuario'
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
