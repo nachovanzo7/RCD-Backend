@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from .serializers import ActualizarDatosSuperUsuarioSerializer, CrearUsuarioSerializer
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -46,12 +47,14 @@ class CrearUsuario(APIView):
                 usuario = serializer.save()
             except DjangoValidationError as e:
                 return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
+            token = Token.objects.get(user=usuario)
             return Response({
                 "mensaje": "Usuario creado exitosamente.",
                 "usuario": {
                     "username": usuario.username,
                     "email": usuario.email,
-                    "rol": usuario.rol
+                    "rol": usuario.rol,
+                    "token": token.key
                 }
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

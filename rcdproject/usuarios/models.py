@@ -10,6 +10,5 @@ class Usuario(AbstractUser):
         ('supervisor_obra', 'Supervisor de Obra'),
         ('tecnico', 'Técnico'),
     ]
-    # Los campos username, email y password ya están definidos en AbstractUser.
-    # Se agrega el campo rol:
+    # Los campos username, email y password ya están definidos en AbstractUser
     rol = models.CharField(max_length=50, choices=OPCIONES_ROL)

@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'usuarios.apps.UsuariosConfig',
+    'rest_framework.authtoken',
     'clientes',
     'transportistas',
     'empresas_gestoras',
@@ -47,7 +49,6 @@ INSTALLED_APPS = [
     'tecnicos',
     'visitas',
     'fotos',
-    'usuarios',
     'formularios',
     'capacitacion',
     'condiciondeobras',
@@ -61,13 +62,13 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
+
 
 
 MIDDLEWARE = [

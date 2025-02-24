@@ -148,5 +148,4 @@ class Formularios(models.Model):
     
 
 
-
-
+# Agregar datos a las diferentes tablas
