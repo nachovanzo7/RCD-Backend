@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/capacitaciones/', include('capacitacion.urls')),
     path('api/formularios/', include('formularios.urls')),
     path('api/notificaciones/', include('notificaciones.urls')),
+    path('api/usuarios/', include('usuarios.urls')),
 ]

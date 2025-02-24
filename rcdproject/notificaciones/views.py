@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from notificaciones.models import Notificacion
-from .serializers import NotificacionSerializer  # Debes crear este serializer
+from .serializers import NotificacionSerializer
 
 @api_view(['GET'])
 def lista_notificaciones(request, cliente_id):
