@@ -3,11 +3,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Tecnico
 from .serializers import TecnicoSerializer
+from usuarios.permisos import RutaProtegida
 
 class CrearTecnico(APIView):
     """
     Permite registrar un nuevo técnico.
     """
+    permission_classes = [RutaProtegida(['super_administrador'])]
     def post(self, request):
         serializer = TecnicoSerializer(data=request.data)
         if serializer.is_valid():
@@ -20,6 +22,7 @@ class ListarTecnicos(APIView):
     """
     Lista todos los técnicos.
     """
+    permission_classes = [RutaProtegida(['super_administrador'])]
     def get(self, request):
         tecnicos = Tecnico.objects.all()
         serializer = TecnicoSerializer(tecnicos, many=True, context={'request': request})

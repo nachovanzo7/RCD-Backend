@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from usuarios.permisos import RutaProtegida
 from rest_framework import status
 from django.utils import timezone
 from .models import Cliente, SolicitudCliente
@@ -11,6 +12,8 @@ class RegistroCliente(APIView):
     """
     Funcion para que el cliente se registre y envie una solicitud al administrador
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
+    
     def post(self, request):
         serializer_cliente = ClienteSerializer(data=request.data)
         if serializer_cliente.is_valid():
@@ -28,6 +31,7 @@ class ListarSolicitudesCliente(APIView):
     """
     Lista todas las solicitudes de clientes al administrador.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra', 'coordinador_retiro'])]
     def get(self, request):
         solicitudes = SolicitudCliente.objects.all()
         serializer = SolicitudClienteAdminSerializer(solicitudes, many=True)
@@ -38,6 +42,7 @@ class AprobarSolicitudCliente(APIView):
     """
     Permite al administrador aceptar una solicitud
     """
+    permission_classes = [RutaProtegida(['super_administrador'])]
     def put(self, request, pk):
         try:
             solicitud = SolicitudCliente.objects.get(pk=pk)
@@ -57,6 +62,7 @@ class RechazarSolicitudCliente(APIView):
     """
     Permite al administrador rechazar una solicitud
     """
+    permission_classes = [RutaProtegida(['super_administrador'])]
     def put(self, request, pk):
         try:
             solicitud = SolicitudCliente.objects.get(pk=pk)
@@ -75,6 +81,7 @@ class ListarClientesAprobados(APIView):
     """
     Lista todos los clientes que fueron aceptados
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra', 'coordinador_retiro'])]
     def get(self, request):
         clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')
         serializer = ClienteSerializer(clientes_aprobados, many=True)
@@ -86,6 +93,7 @@ class DetalleCliente(APIView):
     Devuelve la información de un cliente según su ID,
     solo si la solicitud de registro está aceptada.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra'])]
     def get(self, request, pk):
         try:
             cliente = Cliente.objects.get(pk=pk)
@@ -106,6 +114,7 @@ class ActualizarCliente(APIView):
     """
     Actualizar datos de clientes
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
     def patch(self, request, pk):
         try:
             cliente = Cliente.objects.get(pk=pk)
