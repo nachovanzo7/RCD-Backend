@@ -4,13 +4,14 @@ from rest_framework import status
 from django.utils import timezone
 from .models import CoordinacionRetiro
 from .serializers import CoordinacionRetiroSerializer
-
+from usuarios.permisos import RutaProtegida
 
 class CrearCoordinacionRetiro(APIView):
     """
     Registra una nueva solicitud de coordinación de retiro con estado 'pendiente'.
     Se valida que el transportista pueda transportar el tipo de material solicitado.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro', 'cliente'])]
     def post(self, request):
         serializer = CoordinacionRetiroSerializer(data=request.data)
         if serializer.is_valid():
@@ -31,6 +32,7 @@ class ListarCoordinacionesRetiro(APIView):
     """
     Lista todas las coordinaciones de retiro.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro', 'cliente'])]
     def get(self, request):
         coordinaciones = CoordinacionRetiro.objects.all()
         serializer = CoordinacionRetiroSerializer(coordinaciones, many=True, context={'request': request})
@@ -42,6 +44,7 @@ class AceptarCoordinacionRetiro(APIView):
     Permite al administrador aceptar una solicitud de coordinación de retiro.
     Al aceptar, se actualiza el estado a 'aceptado' (y se puede asignar la fecha de retiro).
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def put(self, request, pk):
         try:
             coordinacion = CoordinacionRetiro.objects.get(pk=pk)
@@ -65,6 +68,7 @@ class RechazarCoordinacionRetiro(APIView):
     """
     Permite al administrador rechazar una solicitud de coordinación de retiro.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def put(self, request, pk):
         try:
             coordinacion = CoordinacionRetiro.objects.get(pk=pk)
@@ -83,6 +87,7 @@ class ListarSolicitudesAceptadasCoordinacion(APIView):
     """
     Lista todas las solicitudes de coordinación de retiro aceptadas.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def get(self, request):
         solicitudes = CoordinacionRetiro.objects.filter(estado='aceptado')
         serializer = CoordinacionRetiroSerializer(solicitudes, many=True, context={'request': request})

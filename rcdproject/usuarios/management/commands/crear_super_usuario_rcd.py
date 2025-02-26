@@ -7,8 +7,8 @@ class Command(BaseCommand):
     help = 'Crea el superusuario "RCD Gestion"'
 
     def handle(self, *args, **options):
-        nombre_usuario = 'RCD Gestion'
-        email = 'rcdgestion@gmail.com'
+        nombre_usuario = 'Gestion RCD'
+        email = 'RCDgestion@gmail.com'
         contrasena = 'Añonuevovidanueva'
         rol = 'super_administrador'
 

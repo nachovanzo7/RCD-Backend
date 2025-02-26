@@ -3,11 +3,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Transportista
 from .serializers import TransportistaSerializer
+from usuarios.permisos import RutaProtegida
 
 class CrearTransportista(APIView):
     """
     Permite al coordinador (administrador) dar de alta un transportista.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def post(self, request):
         serializer = TransportistaSerializer(data=request.data)
         if serializer.is_valid():

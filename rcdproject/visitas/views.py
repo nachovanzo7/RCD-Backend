@@ -8,6 +8,7 @@ class CrearVisita(APIView):
     """
     Permite registrar una nueva visita a una obra.
     """
+    
     def post(self, request):
         serializer = VisitaSerializer(data=request.data)
         if serializer.is_valid():

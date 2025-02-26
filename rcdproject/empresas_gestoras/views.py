@@ -4,11 +4,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import EmpresaGestora
 from .serializers import EmpresaGestoraSerializer
+from usuarios.permisos import RutaProtegida 
 
 class CrearEmpresaGestora(APIView):
     """
     Permite registrar una nueva empresa gestora.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def post(self, request):
         serializer = EmpresaGestoraSerializer(data=request.data)
         if serializer.is_valid():
@@ -23,6 +25,7 @@ class ListarEmpresasGestoras(APIView):
     """
     Lista todas las empresas gestoras.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def get(self, request):
         empresas = EmpresaGestora.objects.all()
         serializer = EmpresaGestoraSerializer(empresas, many=True, context={'request': request})
@@ -32,6 +35,7 @@ class ModificarDatosEmpresaGestora(APIView):
     """
     Permite modificar los datos de una empresa gestora
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def patch(self, request, pk):
         try:
             empresa = EmpresaGestora.objects.get(pk=pk)
@@ -48,6 +52,7 @@ class EliminarEmpresaGestora(APIView):
     """
     Elimina a una empresa gestora
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
     def delete(self, request, pk):
         try:
             empresa = EmpresaGestora.objects.get(pk=pk)

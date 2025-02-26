@@ -5,11 +5,13 @@ from rest_framework import status
 from .models import Material
 from .serializers import MaterialSerializer
 from django.core.exceptions import ValidationError as DjangoValidationError
+from usuarios.permisos import RutaProtegida
 
 class CrearMaterial(APIView):
     """
     Permite crear un nuevo Material asociado a un Punto Limpio y un Transportista.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
     def post(self, request):
         serializer = MaterialSerializer(data=request.data)
         if serializer.is_valid():
@@ -25,6 +27,7 @@ class ListarMateriales(APIView):
     """
     Lista todos los materiales.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
     def get(self, request):
         materiales = Material.objects.all()
         serializer = MaterialSerializer(materiales, many=True, context={'request': request})

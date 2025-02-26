@@ -4,12 +4,14 @@ from rest_framework import status
 from django.core.exceptions import ValidationError as DjangoValidationError
 from .serializers import FormularioSerializer
 from notificaciones.models import Notificacion
+from usuarios.permisos import RutaProtegida
 
 class CrearFormulario(APIView):
     """
     Permite crear un nuevo registro de Formulario y, en caso de valores críticos,
     crea una notificación para el cliente asociado a la obra.
     """
+    permission_classes = [RutaProtegida(['super_administrador', 'tecnicos'])]
     def post(self, request):
         serializer = FormularioSerializer(data=request.data)
         if serializer.is_valid():
