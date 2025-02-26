@@ -1,22 +1,25 @@
 from rest_framework import serializers
 from .models import Cliente, SolicitudCliente
 
+
 class ClienteSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
         model = Cliente
         fields = [
             'id', 'nombre', 'direccion', 'contacto', 'nombre_contacto',
             'fecha_ingreso', 'razon_social', 'direccion_fiscal', 'rut',
-            'mail', 'password', 'rol'
+            'mail', 'password'
         ]
-        read_only_fields = ['id', 'rol']
+        read_only_fields = ['id']
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
+        raw_password = validated_data.get('password')
         cliente = Cliente(**validated_data)
-        cliente.set_password(password)
+        # Guarda la contraseña temporalmente para usarla luego en el signal o en la vista
+        cliente._raw_password = raw_password
+        cliente.set_password(raw_password)
         cliente.save()
         return cliente
 

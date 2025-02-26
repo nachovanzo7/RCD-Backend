@@ -9,6 +9,7 @@ class CoordinacionRetiro(models.Model):
         ('pendiente', 'Pendiente'),
         ('aceptado', 'Aceptado'),
         ('rechazado', 'Rechazado'),
+        ('inactivo', 'Inactivo'),
     ]
     descripcion = models.TextField("Descripción")
     observaciones = models.TextField("Observaciones", blank=True, null=True)

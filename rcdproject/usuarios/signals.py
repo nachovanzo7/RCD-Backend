@@ -17,7 +17,7 @@ def crear_usuario_asociado(sender, instance, created, **kwargs):
         Usuario.objects.create_user(
             username=instance.mail,
             email=instance.mail,
-            password="PasswordPorDefectoOGenerado",  # Considera generar o capturar la contraseña real
+            password="PasswordPorDefectoOGenerado",  
             first_name=instance.nombre,  
             rol='cliente'
         )
