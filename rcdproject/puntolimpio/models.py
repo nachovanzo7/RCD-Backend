@@ -20,8 +20,9 @@ class PuntoLimpio(models.Model):
     metros_cuadrados = models.DecimalField("Metros Cuadrados", max_digits=10, decimal_places=2, default=0)
     estructura = models.CharField("Estructura", max_length=200, default="No especificado")
     tipo_contenedor = models.CharField("Tipo de Contenedor", max_length=200, default="No especificado")
-    puntaje = models.IntegerField("Puntaje", default=0)
+    puntaje = models.IntegerField("Puntaje", default=0, null=True)
     señaletica = models.BooleanField("Señalética", default=True)
     observaciones = models.TextField("Observaciones", blank=True, null=True, default="")
     clasificacion = models.CharField("Clasificación", max_length=20, choices=CLAIFICACION_CHOICES, default="no_aplica")
+    estado = models.TextField("Estado", default="activo")
     

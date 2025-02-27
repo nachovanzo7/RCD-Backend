@@ -3,10 +3,10 @@ from django.db import models
 
 class Usuario(AbstractUser):
     OPCIONES_ROL = [
-        ('super_administrador', 'Super Administrador'),
-        ('coordinador_obra', 'Coordinador de Obra'),
-        ('coordinador_logistico', 'Coordinador Logistico'),
-        ('supervisor_obra', 'Supervisor de Obra'),
+        ('superadmin', 'Super Administrador'),
+        ('coordinador', 'Coordinador de Obra'),
+        ('coordinadorlogistico', 'Coordinador Logistico'),
+        ('supervisor', 'Supervisor de Obra'),
         ('tecnico', 'Técnico'),
         ('cliente', 'Cliente'),
     ]

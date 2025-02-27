@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from .serializers import ActualizarDatosSuperUsuarioSerializer, CrearUsuarioSerializer
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from .permisos import RutaProtegida
 
 Usuario = get_user_model()
@@ -61,7 +62,7 @@ class CrearUsuario(APIView):
 
 class LoginView(APIView):
     authentication_classes = []  
-    permission_classes = []
+    permission_classes = [AllowAny]
 
     def post(self, request):
         email = request.data.get('email')

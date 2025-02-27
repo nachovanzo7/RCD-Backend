@@ -10,7 +10,7 @@ class CrearPuntoLimpio(APIView):
     """
     Permite registrar un nuevo punto limpio
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
     def post(self, request):
         serializer = PuntoLimpioSerializer(data=request.data)
         if serializer.is_valid():
@@ -23,7 +23,7 @@ class ListarPuntosLimpios(APIView):
     """
     Lista todos los puntos limpios
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente', 'supervisor_obra'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor_obra'])]
     def get(self, request):
         puntos = PuntoLimpio.objects.all()
         serializer = PuntoLimpioSerializer(puntos, many=True, context={'request': request})
@@ -34,7 +34,7 @@ class ActualizarPuntoLimpio(APIView):
     Permite actualizar un punto limpio existente.
     Se usa PATCH para actualización parcial.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente', 'supervisor_obra'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor_obra'])]
     def patch(self, request, pk):
         try:
             punto = PuntoLimpio.objects.get(pk=pk)

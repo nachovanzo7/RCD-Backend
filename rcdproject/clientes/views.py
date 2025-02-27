@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from usuarios.permisos import RutaProtegida
 from rest_framework import status
 from django.utils import timezone
+from rest_framework.permissions import AllowAny
 import secrets
 from .models import Cliente, SolicitudCliente
 from .serializers import ClienteSerializer, SolicitudClienteSerializer, SolicitudClienteAdminSerializer
@@ -12,12 +13,14 @@ from rest_framework.authtoken.models import Token
 
 Usuario = get_user_model()
 
+from rest_framework.permissions import AllowAny
+
 class RegistroCliente(APIView):
     """
     Permite que el superadministrador registre un nuevo cliente.
     Se crea el Cliente, su Solicitud y se asocia un Usuario.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer_cliente = ClienteSerializer(data=request.data)
@@ -53,15 +56,15 @@ class RegistroCliente(APIView):
                 'mensaje': 'Cliente registrado, pendiente de aprobación.',
                 'cliente': ClienteSerializer(cliente).data,
                 'solicitud': SolicitudClienteSerializer(solicitud).data,
-                # 'contraseña': raw_password  # No retornar la contraseña en producción
             }, status=status.HTTP_201_CREATED)
         return Response(serializer_cliente.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ListarSolicitudesCliente(APIView):
     """
     Lista todas las solicitudes de clientes para revisión del administrador.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
 
     def get(self, request):
         solicitudes = SolicitudCliente.objects.all()
@@ -72,7 +75,7 @@ class AprobarSolicitudCliente(APIView):
     """
     Permite al administrador aprobar una solicitud.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     
     def put(self, request, pk):
         try:
@@ -125,7 +128,7 @@ class ListarClientesAprobados(APIView):
     """
     Lista todos los clientes cuya solicitud fue aceptada.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra', 'coordinador_retiro'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     
     def get(self, request):
         clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')

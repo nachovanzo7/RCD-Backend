@@ -17,7 +17,7 @@ class RegistroObra(APIView):
     con estado "pendiente". Los puntos limpios y los materiales se registrarán
     por separado.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
     def post(self, request):
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
@@ -39,7 +39,7 @@ class ListarSolicitudesObra(APIView):
     """
     Lista todas las solicitudes de obras para el administrador
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra', 'coordinador_retiro'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     def get(self, request):
         solicitudes = SolicitudObra.objects.all()
         serializer = SolicitudObraAdminSerializer(solicitudes, many=True)
@@ -49,7 +49,7 @@ class AprobarSolicitudObra(APIView):
     """
     Permite al administrador aceptar una solicitud de obra
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def put(self, request, pk):
         try:
             solicitud = SolicitudObra.objects.get(pk=pk)
@@ -69,7 +69,7 @@ class RechazarSolicitudObra(APIView):
     Permite al administrador rechazar una solicitud de obra.
     Al rechazar, se eliminan los puntos limpios y los materiales asociados a la obra.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def put(self, request, pk):
         try:
             solicitud = SolicitudObra.objects.get(pk=pk)
@@ -95,7 +95,7 @@ class ListarObrasAprobadas(APIView):
     """
     Muestra una lista con las obras que fueron aprobadas
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra', 'coordinador_retiro'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico'])]
     def get(self, request):
         obras = Obra.objects.filter(solicitud__estado='Aceptado')
         serializer = ObraSerializer(obras, many=True)
@@ -105,7 +105,7 @@ class ModificarDatosObra(APIView):
     """
     Modificar datos de obras
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
     def patch(self, request, pk):
         try:
             obra = Obra.objects.get(pk=pk)
@@ -122,7 +122,7 @@ class EliminarObra(APIView):
     """
     Eliminar una obra
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
     def delete(self, request, pk):
         try:
             obra = Obra.objects.get(pk=pk)
