@@ -25,7 +25,7 @@ class ListarSupervisoresObra(APIView):
     """
     Permite listar todos los supervisores de obra
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def get(self, request):
         supervisores = SupervisorObra.objects.all()
         serializer = SupervisorObraSerializer(supervisores, many=True, context={'request': request})
@@ -35,7 +35,7 @@ class ModificarDatosSupervisorObra(APIView):
     """
     Permite modificar los datos de un supervisor de obra
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'supervisor_obra'])]
+    permission_classes = [RutaProtegida(['superadmin', 'supervisor_obra'])]
     def patch(self, request, pk):
         try:
             supervisor = SupervisorObra.objects.get(pk=pk)
@@ -52,7 +52,7 @@ class EliminarSupervisorObra(APIView):
     """
     Elimina un supervisor de obra
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'supervisor_obra'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def delete(self, request, pk):
         try:
             supervisor = SupervisorObra.objects.get(pk=pk)

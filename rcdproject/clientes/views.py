@@ -108,7 +108,7 @@ class RechazarSolicitudCliente(APIView):
     """
     Permite al administrador rechazar una solicitud.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     
     def put(self, request, pk):
         try:
@@ -139,8 +139,8 @@ class DetalleCliente(APIView):
     """
     Devuelve la información de un cliente si su solicitud está aprobada.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_obra'])]
-    
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador'])]
+    #devolver nombre de las obras (lista)
     def get(self, request, pk):
         try:
             cliente = Cliente.objects.get(pk=pk)
@@ -158,7 +158,7 @@ class ActualizarCliente(APIView):
     """
     Permite actualizar los datos de un cliente.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
     
     def patch(self, request, pk):
         try:

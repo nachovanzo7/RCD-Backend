@@ -117,6 +117,21 @@ class ModificarDatosObra(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class DetallesObra(APIView):
+    """
+    Muestra los detalles de una obra
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador'])]
+
+    def get(self, request, pk):
+        try:
+            obra = Obra.objects.get(pk=pk)
+        except Obra.DoesNotExist:
+            return Response({'error': 'Obra no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ObraSerializer(obra, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class EliminarObra(APIView):
     """

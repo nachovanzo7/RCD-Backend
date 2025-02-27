@@ -4,7 +4,7 @@ from obras.models import Obra
 
 class Formularios(models.Model):
     id = models.AutoField(primary_key=True)
-    tecnico = models.ForeignKey(Tecnico, on_delete=models.CASCADE, related_name='formularios')
+    tecnico = models.ForeignKey(Tecnico, on_delete=models.CASCADE, related_name='formularios') 
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='formularios')
     fecha = models.DateField("Fecha")
     motivo_de_visita = models.CharField("Motivo de visita", max_length=200) 
@@ -16,7 +16,7 @@ class Formularios(models.Model):
     limpieza_general_en_terreno = models.CharField("Limpieza general en terreno", max_length=200)
     limpieza_general_en_pisos = models.CharField("Limpieza general en terreno", max_length=200)
     limpieza_general_observaciones = models.CharField("Limpieza general en terreno", max_length=500)
-    logistica_de_obra = models.CharField("Logística de obra", max_length=200)
+    logistica_de_obra = models.CharField("Logística de obra", max_length=200) #
     logistica_de_obra_observaciones = models.CharField("Logística de obra", max_length=500)
     PUNTOLIMPIO_CHOICES = [
         ('si_hay', 'Sí Hay'),

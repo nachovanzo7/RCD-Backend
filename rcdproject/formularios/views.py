@@ -11,7 +11,7 @@ class CrearFormulario(APIView):
     Permite crear un nuevo registro de Formulario y, en caso de valores críticos,
     crea una notificación para el cliente asociado a la obra.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'tecnicos'])]
+    permission_classes = [RutaProtegida(['superadmin', 'tecnicos'])]
     def post(self, request):
         serializer = FormularioSerializer(data=request.data)
         if serializer.is_valid():

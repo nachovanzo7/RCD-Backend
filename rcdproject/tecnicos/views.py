@@ -9,7 +9,7 @@ class CrearTecnico(APIView):
     """
     Permite registrar un nuevo técnico.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def post(self, request):
         serializer = TecnicoSerializer(data=request.data)
         if serializer.is_valid():
@@ -22,7 +22,7 @@ class ListarTecnicos(APIView):
     """
     Lista todos los técnicos.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def get(self, request):
         tecnicos = Tecnico.objects.all()
         serializer = TecnicoSerializer(tecnicos, many=True, context={'request': request})

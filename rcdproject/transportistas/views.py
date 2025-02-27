@@ -9,7 +9,7 @@ class CrearTransportista(APIView):
     """
     Permite al coordinador (administrador) dar de alta un transportista.
     """
-    permission_classes = [RutaProtegida(['super_administrador', 'coordinador_retiro'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
     def post(self, request):
         serializer = TransportistaSerializer(data=request.data)
         if serializer.is_valid():
@@ -25,6 +25,7 @@ class ListarTransportistas(APIView):
     """
     Lista todos los transportistas.
     """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
     def get(self, request):
         transportistas = Transportista.objects.all()
         serializer = TransportistaSerializer(transportistas, many=True, context={'request': request})
@@ -34,6 +35,7 @@ class ModificarDatosTransportista(APIView):
     """
     Permite modificar los datos de un transportista
     """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
     def patch(self, request, pk):
         try:
             transportista = Transportista.objects.get(pk=pk)
@@ -50,6 +52,7 @@ class EliminarTransportista(APIView):
     """
     Permite eliminar un transportista
     """
+    permission_classes = [RutaProtegida(['superadmin'])]
     def delete(self, request, pk):
         try:
             transportista = Transportista.objects.get(pk=pk)

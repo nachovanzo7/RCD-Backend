@@ -25,4 +25,6 @@ class PuntoLimpio(models.Model):
     observaciones = models.TextField("Observaciones", blank=True, null=True, default="")
     clasificacion = models.CharField("Clasificación", max_length=20, choices=CLAIFICACION_CHOICES, default="no_aplica")
     estado = models.TextField("Estado", default="activo")
-    
+
+
+# clas PuntAcopio
