@@ -6,4 +6,3 @@ class SupervisorObraSerializer(serializers.ModelSerializer):
         model = SupervisorObra
         fields = ['id', 'nombre', 'telefono', 'email', 'obra', 'nivel_capacitacion']
         read_only_fields = ['id']
-        

@@ -6,3 +6,4 @@ class TecnicoSerializer(serializers.ModelSerializer):
         model = Tecnico
         fields = ['id', 'nombre']
         read_only_fields = ['id']
+

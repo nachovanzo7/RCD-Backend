@@ -19,7 +19,9 @@ class SolicitudObraSerializer(serializers.ModelSerializer):
 class SolicitudObraAdminSerializer(serializers.ModelSerializer):
     obra = serializers.IntegerField(source='obra.id', read_only=True)
     cliente = serializers.IntegerField(source='obra.cliente.id', read_only=True)
+    nombre_obra = serializers.CharField(source='obra.nombre_obra', read_only=True)
+    
     class Meta:
         model = SolicitudObra
-        fields = ['estado', 'fecha_solicitud', 'obra', 'cliente']
-        read_only_fields = ['fecha_solicitud', 'obra', 'cliente', 'estado']
+        fields = ['estado', 'fecha_solicitud', 'obra', 'cliente', 'nombre_obra']
+        read_only_fields = ['fecha_solicitud', 'obra', 'cliente', 'estado', 'nombre_obra']

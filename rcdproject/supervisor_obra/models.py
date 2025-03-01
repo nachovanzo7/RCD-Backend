@@ -1,6 +1,10 @@
 from django.db import models
 from obras.models import Obra
 
+from django.contrib.auth import get_user_model
+Usuario = get_user_model()
+
+
 class SupervisorObra(models.Model):
     NIVEL_CAPACITACION_CHOICES = [
         ('participa_activamente', 'Participa Activamente'),
@@ -10,9 +14,7 @@ class SupervisorObra(models.Model):
         ('no_participa', 'No Participa'),
         ('no_hay', 'No Hay'),
     ]
-    id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='supervisor', null=True, blank=True)
     telefono = models.CharField(max_length=50)
-    email = models.EmailField(unique=True)
     obra = models.OneToOneField(Obra, on_delete=models.CASCADE, related_name='supervisor')
-    nivel_capacitacion = models.CharField(max_length=50, choices=NIVEL_CAPACITACION_CHOICES, default='No Hay')
+    nivel_capacitacion = models.CharField(max_length=50, choices=NIVEL_CAPACITACION_CHOICES, default='no_hay')

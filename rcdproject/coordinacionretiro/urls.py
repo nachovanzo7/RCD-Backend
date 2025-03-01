@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import CrearCoordinacionRetiro, ListarCoordinacionesRetiro, AceptarCoordinacionRetiro, RechazarCoordinacionRetiro, ListarSolicitudesAceptadasCoordinacion
+from .views import (
+    CrearCoordinacionRetiro, 
+    ListarCoordinacionesRetiro, 
+    AceptarCoordinacionRetiro, 
+    RechazarCoordinacionRetiro, 
+    ListarSolicitudesAceptadasCoordinacion
+)
 
 urlpatterns = [
     path('registro/', CrearCoordinacionRetiro.as_view(), name='registro-coordinacion'),

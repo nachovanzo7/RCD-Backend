@@ -9,13 +9,16 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
 from .permisos import RutaProtegida
+from clientes.models import Cliente
+
 
 Usuario = get_user_model()
 
+
 class ActualizarDatosSuperUsuario(APIView):
     """
-    Vista que permite al superusuario modificar su email y contraseña.
-    Requiere que el usuario esté autenticado y sea superadministrador.
+    Permite al superusuario modificar su email y contraseña.
+    Requiere autenticación y rol 'superadmin'.
     """
     permission_classes = [IsAuthenticated]
 
@@ -33,9 +36,10 @@ class ActualizarDatosSuperUsuario(APIView):
             return Response({"mensaje": "Datos actualizados correctamente."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CrearUsuario(APIView):
     """
-    Vista que permite al superadministrador crear nuevos usuarios con un rol específico.
+    Permite al superadministrador crear nuevos usuarios con un rol específico.
     """
     permission_classes = [RutaProtegida(['superadmin'])]
 
@@ -46,8 +50,7 @@ class CrearUsuario(APIView):
                 usuario = serializer.save()
             except DjangoValidationError as e:
                 return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
-            # Obtenemos o creamos el token para el usuario
-            token, created = Token.objects.get_or_create(user=usuario)
+            token, _ = Token.objects.get_or_create(user=usuario)
             return Response({
                 "mensaje": "Usuario creado exitosamente.",
                 "usuario": {
@@ -59,7 +62,10 @@ class CrearUsuario(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     authentication_classes = []  
     permission_classes = [AllowAny]
@@ -73,29 +79,26 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Buscar el usuario por email
         try:
             user_obj = Usuario.objects.get(email=email)
         except Usuario.DoesNotExist:
             return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        # Si el usuario es un cliente, verificar que su solicitud esté aprobada
+        # Si el usuario es cliente, se valida que su solicitud esté aprobada.
+        # Para otros roles se permite iniciar sesión sin esa verificación.
         if user_obj.rol == 'cliente':
             try:
-                from clientes.models import Cliente
-                cliente = Cliente.objects.get(mail=email)
-                # Verificar que exista la solicitud y que su estado sea "aceptado"
+                cliente = Cliente.objects.get(usuario=user_obj)
                 if not hasattr(cliente, 'solicitud') or cliente.solicitud.estado != 'aceptado':
                     return Response({'error': 'Acceso denegado. Cliente no aprobado.'}, status=status.HTTP_403_FORBIDDEN)
             except Cliente.DoesNotExist:
                 return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Autenticar usando el username real del usuario
+        
         user = authenticate(username=user_obj.username, password=password)
         if user is None:
             return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        token, created = Token.objects.get_or_create(user=user)
+        token, _ = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
             'email': user.email,

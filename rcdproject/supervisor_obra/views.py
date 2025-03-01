@@ -8,10 +8,13 @@ from usuarios.permisos import RutaProtegida
 
 class CrearSupervisorObra(APIView):
     """
-    Permite registrar un nuevo supervisor de obra
+    Permite registrar un nuevo supervisor de obra.
+    Se espera que se asocie al usuario correspondiente (deberá crearse previamente o en conjunto).
     """
     permission_classes = [RutaProtegida(['superadmin'])]
+    
     def post(self, request):
+        # Se asume que en el serializer se maneja la relación con Usuario (campo 'usuario')
         serializer = SupervisorObraSerializer(data=request.data)
         if serializer.is_valid():
             supervisor = serializer.save()
@@ -21,21 +24,25 @@ class CrearSupervisorObra(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ListarSupervisoresObra(APIView):
     """
-    Permite listar todos los supervisores de obra
+    Permite listar todos los supervisores de obra.
     """
     permission_classes = [RutaProtegida(['superadmin'])]
+    
     def get(self, request):
         supervisores = SupervisorObra.objects.all()
         serializer = SupervisorObraSerializer(supervisores, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class ModificarDatosSupervisorObra(APIView):
     """
-    Permite modificar los datos de un supervisor de obra
+    Permite modificar los datos de un supervisor de obra.
     """
     permission_classes = [RutaProtegida(['superadmin', 'supervisor'])]
+    
     def patch(self, request, pk):
         try:
             supervisor = SupervisorObra.objects.get(pk=pk)
@@ -48,11 +55,13 @@ class ModificarDatosSupervisorObra(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class EliminarSupervisorObra(APIView):
     """
-    Elimina un supervisor de obra
+    Elimina un supervisor de obra.
     """
     permission_classes = [RutaProtegida(['superadmin'])]
+    
     def delete(self, request, pk):
         try:
             supervisor = SupervisorObra.objects.get(pk=pk)
@@ -61,3 +70,4 @@ class EliminarSupervisorObra(APIView):
         
         supervisor.delete()
         return Response({'mensaje': 'El supervisor de obra fue eliminado.'}, status=status.HTTP_200_OK)
+

@@ -12,16 +12,6 @@ def crear_token_automatico(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-@receiver(post_save, sender=Cliente)
-def crear_usuario_asociado(sender, instance, created, **kwargs):
-    if created:
-        Usuario.objects.create_user(
-            username=instance.mail,
-            email=instance.mail,
-            password="PasswordPorDefectoOGenerado",  
-            first_name=instance.nombre,  
-            rol='cliente'
-        )
         
 @receiver(post_migrate)
 def create_default_superadmin(sender, **kwargs):

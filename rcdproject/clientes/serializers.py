@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Cliente, SolicitudCliente
 from obras.models import Obra
+from django.contrib.auth import get_user_model
+Usuario = get_user_model()
 
 class ObraSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,34 +11,32 @@ class ObraSerializer(serializers.ModelSerializer):
 
 
 class ClienteSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
-    obras = ObraSerializer(many=True, read_only=True)  
+    password = serializers.CharField(write_only=True, min_length=8, required=True)
+    obras = ObraSerializer(many=True, read_only=True)
+    usuario = serializers.PrimaryKeyRelatedField(
+        write_only=True,
+        queryset=Usuario.objects.all(),
+        required=True
+    )
+    # Agregamos el campo email, extrayéndolo del usuario asociado
+    email = serializers.CharField(source="usuario.email", read_only=True)
 
     class Meta:
         model = Cliente
         fields = [
-            'id', 'nombre', 'direccion', 'contacto', 'nombre_contacto',
-            'fecha_ingreso', 'razon_social', 'direccion_fiscal', 'rut',
-            'mail', 'password', 'obras' 
+            'id', 'usuario', 'nombre', 'direccion', 'contacto', 'nombre_contacto',
+            'fecha_ingreso', 'razon_social', 'direccion_fiscal', 'rut', 'password', 'obras', 'email'
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'obras', 'email']
 
     def create(self, validated_data):
-        raw_password = validated_data.get('password')
-        cliente = Cliente(**validated_data)
-        # Guarda la contraseña temporalmente para usarla luego en el signal o en la vista
+        raw_password = validated_data.pop('password')
+        usuario = validated_data.pop('usuario')
+        # Se asume que el usuario ya fue creado en la vista y se le asignó la contraseña,
+        # por lo que en este serializer se crea el Cliente asociado.
+        cliente = Cliente.objects.create(usuario=usuario, **validated_data)
+        # Si requieres, puedes almacenar el raw_password temporalmente
         cliente._raw_password = raw_password
-        cliente.set_password(raw_password)
-        cliente.save()
-        return cliente
-
-    def create(self, validated_data):
-        raw_password = validated_data.get('password')
-        cliente = Cliente(**validated_data)
-        # Guarda la contraseña temporalmente para usarla luego en el signal o en la vista
-        cliente._raw_password = raw_password
-        cliente.set_password(raw_password)
-        cliente.save()
         return cliente
 
 
@@ -47,6 +47,7 @@ class SolicitudClienteSerializer(serializers.ModelSerializer):
         model = SolicitudCliente
         fields = ['estado', 'fecha_solicitud', 'cliente_id']
         read_only_fields = ['fecha_solicitud', 'estado']
+
 
 class SolicitudClienteAdminSerializer(serializers.ModelSerializer):
     cliente_id = serializers.IntegerField(source='cliente.pk', read_only=True)

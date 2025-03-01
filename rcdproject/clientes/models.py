@@ -1,8 +1,11 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+Usuario = get_user_model()
 from django.contrib.auth.hashers import make_password, check_password
 
+
 class Cliente(models.Model):
-    id = models.AutoField(primary_key=True)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='cliente', null=True, blank=True)
     nombre = models.CharField(max_length=50)
     direccion = models.CharField(max_length=300)
     contacto = models.CharField(max_length=50)
@@ -11,15 +14,16 @@ class Cliente(models.Model):
     razon_social = models.CharField(max_length=300)
     direccion_fiscal = models.CharField(max_length=300)
     rut = models.CharField(max_length=300)
-    mail = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
-    rol = models.CharField(max_length=20, default='cliente', editable=False)
 
+    # Si es necesario, puedes implementar métodos para delegar la gestión de contraseña,
+    # aunque normalmente usarás el mecanismo de Usuario.
     def set_password(self, raw_password):
-        self.password = make_password(raw_password)
+        self.usuario.password = make_password(raw_password)
+        self.usuario.save()
     
     def check_password(self, raw_password):
-        return check_password(raw_password, self.password)
+        return check_password(raw_password, self.usuario.password)
+
 
 
 class SolicitudCliente(models.Model):

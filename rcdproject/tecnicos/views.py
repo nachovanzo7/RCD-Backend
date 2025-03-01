@@ -8,8 +8,10 @@ from usuarios.permisos import RutaProtegida
 class CrearTecnico(APIView):
     """
     Permite registrar un nuevo técnico.
+    Se espera que se asocie al usuario correspondiente (deberá crearse previamente o en conjunto).
     """
     permission_classes = [RutaProtegida(['superadmin'])]
+    
     def post(self, request):
         serializer = TecnicoSerializer(data=request.data)
         if serializer.is_valid():
@@ -18,11 +20,13 @@ class CrearTecnico(APIView):
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ListarTecnicos(APIView):
     """
     Lista todos los técnicos.
     """
     permission_classes = [RutaProtegida(['superadmin'])]
+    
     def get(self, request):
         tecnicos = Tecnico.objects.all()
         serializer = TecnicoSerializer(tecnicos, many=True, context={'request': request})
