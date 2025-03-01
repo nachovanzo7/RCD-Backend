@@ -171,3 +171,18 @@ class ActualizarCliente(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EliminarCliente(APIView):
+    """
+    Permite eliminar un cliente.
+    """
+    permission_classes = [RutaProtegida(['superadmin'])]
+    
+    def delete(self, request, pk):
+        try:
+            cliente = Cliente.objects.get(pk=pk)
+        except Cliente.DoesNotExist:
+            return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        cliente.delete()
+        return Response({'mensaje': 'Cliente eliminado.'}, status=status.HTTP_200_OK)
