@@ -21,7 +21,7 @@ class ActualizarDatosSuperUsuario(APIView):
 
     def put(self, request):
         usuario = request.user
-        if usuario.rol != 'super_administrador':
+        if usuario.rol != 'superadmin':
             return Response(
                 {"error": "No tienes permiso para realizar esta acción."},
                 status=status.HTTP_403_FORBIDDEN
@@ -37,7 +37,7 @@ class CrearUsuario(APIView):
     """
     Vista que permite al superadministrador crear nuevos usuarios con un rol específico.
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
 
     def post(self, request):
         serializer = CrearUsuarioSerializer(data=request.data)

@@ -42,7 +42,7 @@ class RegistroCliente(APIView):
                 usuario.save()
             except Usuario.DoesNotExist:
                 usuario = Usuario.objects.create_user(
-                    username=cliente.mail,
+                    username=cliente.nombre,
                     email=cliente.mail,
                     password=raw_password,
                     first_name=cliente.nombre,

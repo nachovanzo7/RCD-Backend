@@ -10,7 +10,7 @@ class CrearSupervisorObra(APIView):
     """
     Permite registrar un nuevo supervisor de obra
     """
-    permission_classes = [RutaProtegida(['super_administrador'])]
+    permission_classes = [RutaProtegida(['superadmin'])]
     def post(self, request):
         serializer = SupervisorObraSerializer(data=request.data)
         if serializer.is_valid():
@@ -35,7 +35,7 @@ class ModificarDatosSupervisorObra(APIView):
     """
     Permite modificar los datos de un supervisor de obra
     """
-    permission_classes = [RutaProtegida(['superadmin', 'supervisor_obra'])]
+    permission_classes = [RutaProtegida(['superadmin', 'supervisor'])]
     def patch(self, request, pk):
         try:
             supervisor = SupervisorObra.objects.get(pk=pk)
