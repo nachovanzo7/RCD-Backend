@@ -21,3 +21,6 @@ class Transportista(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES)
     tipo_vehiculo = models.CharField(max_length=100)
     tipo_material = models.CharField(max_length=20, choices=TIPOS_MATERIAL_CHOICES)
+
+    def __str__(self):
+        return self.nombre

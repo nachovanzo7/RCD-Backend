@@ -28,6 +28,9 @@ class Obra(models.Model):
     cant_visitas_mes = models.IntegerField("Cantidad de Visitas al Mes", null=True, blank=True, default=0)
     imagenes = models.ImageField(upload_to='obras/imagenes/', null=True, blank=True)
 
+    def __str__(self):
+        return self.nombre_obra
+
 class SolicitudObra(models.Model):
     ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),

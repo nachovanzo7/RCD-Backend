@@ -2,6 +2,9 @@ from rest_framework import serializers
 from .models import CoordinacionRetiro
 
 class CoordinacionRetiroSerializer(serializers.ModelSerializer):
+    obra = serializers.StringRelatedField()
+    transportista = serializers.StringRelatedField()
+
     class Meta:
         model = CoordinacionRetiro
         fields = [
