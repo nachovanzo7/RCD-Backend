@@ -7,34 +7,18 @@ from .serializers import CoordinacionRetiroSerializer
 from usuarios.permisos import RutaProtegida
 
 class CrearCoordinacionRetiro(APIView):
-    """
-    Registra una nueva solicitud de coordinación de retiro con estado 'pendiente'.
-    Se valida que el transportista pueda transportar el tipo de material solicitado.
-    """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
-    
+
     def post(self, request):
         serializer = CoordinacionRetiroSerializer(data=request.data)
         if serializer.is_valid():
-            transportista = serializer.validated_data.get("transportista")
-            tipo_material = serializer.validated_data.get("tipo_material")
-            estado = serializer.validated_data.get("estado")
-            if transportista.estado != 'activo':
-                return Response(
-                    {"error": "El transportista seleccionado no está activo."}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if transportista.tipo_material != tipo_material:
-                return Response(
-                    {"error": "El transportista seleccionado no puede transportar este tipo de material."}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             coordinacion = serializer.save()
             return Response(
                 CoordinacionRetiroSerializer(coordinacion, context={'request': request}).data, 
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ListarCoordinacionesRetiro(APIView):
