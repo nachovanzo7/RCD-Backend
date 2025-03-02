@@ -25,9 +25,3 @@ class CoordinacionRetiroSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("El transportista seleccionado no puede transportar este tipo de material.")
 
         return data
-
-
-
-
-# obra = serializers.StringRelatedField()
-#     transportista = serializers.StringRelatedField()
