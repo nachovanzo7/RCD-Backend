@@ -25,6 +25,8 @@ class Material(models.Model):
     esta_lleno = models.BooleanField("Está lleno", default=False)
     tipo_material = models.CharField("Tipo de Material", max_length=20, choices=TIPO_MATERIAL_CHOICES)
     ventilacion = models.CharField("Ventilación", max_length=100, null=True, blank=True, help_text="Obligatorio si el material es 'peligrosos'")
+    cantidad = models.IntegerField("Cantidad", default=0)
+    
 
     def clean(self):
         # ✅ Asegura que 'ventilacion' tenga un valor si el material es 'peligrosos'

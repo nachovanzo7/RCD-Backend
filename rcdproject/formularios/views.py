@@ -27,12 +27,10 @@ class CrearFormulario(APIView):
 
         try:
             with transaction.atomic():
-                # Crear un nuevo formulario con los datos recibidos
                 formulario_serializer = FormularioSerializer(data=data)
                 
                 if formulario_serializer.is_valid():
                     formulario = formulario_serializer.save()
-                    
                     return Response(
                         {"mensaje": "Formulario creado exitosamente", "formulario_id": formulario.id},
                         status=status.HTTP_201_CREATED
@@ -62,3 +60,15 @@ class ListarFormularios(APIView):
         formularios = Formularios.objects.all()  # Obtiene todos los formularios
         serializer = FormularioSerializer(formularios, many=True)  # Serializa los datos
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+
+class DetalleFormulario(generics.RetrieveAPIView):
+    """
+    API endpoint que devuelve el detalle de un formulario dado su ID.
+    Se requiere autenticación.
+    """
+    queryset = Formularios.objects.all()
+    serializer_class = FormularioSerializer
+    permission_classes = [IsAuthenticated]

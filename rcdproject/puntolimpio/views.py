@@ -4,20 +4,26 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import PuntoLimpio
 from .serializers import PuntoLimpioSerializer
+from materiales.serializers import MaterialSerializer
 from usuarios.permisos import RutaProtegida
+
 
 class CrearPuntoLimpio(APIView):
     """
-    Permite registrar un nuevo punto limpio
+    Permite registrar un nuevo Punto Limpio.
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+
     def post(self, request):
         serializer = PuntoLimpioSerializer(data=request.data)
         if serializer.is_valid():
             punto = serializer.save()
-            return Response(PuntoLimpioSerializer(punto, context={'request': request}).data,
-                            status=status.HTTP_201_CREATED)
+            return Response(
+                PuntoLimpioSerializer(punto, context={'request': request}).data,
+                status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ListarPuntosLimpios(APIView):
     """
@@ -46,3 +52,21 @@ class ActualizarPuntoLimpio(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class PuntoLimpioDetalle(APIView):
+    """
+    Endpoint para obtener los detalles de un Punto Limpio.
+    Se espera recibir el parámetro "id" por query string.
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor', 'tecnico'])]
+
+    def get(self, request):
+        punto_id = request.query_params.get('id')
+        if not punto_id:
+            return Response({'error': 'El parámetro id es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            punto = PuntoLimpio.objects.get(id=punto_id)
+        except PuntoLimpio.DoesNotExist:
+            return Response({'error': 'Punto Limpio no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PuntoLimpioSerializer(punto, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

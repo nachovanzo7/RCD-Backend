@@ -9,9 +9,10 @@ from usuarios.permisos import RutaProtegida
 
 class CrearMaterial(APIView):
     """
-    Permite crear un nuevo Material asociado a un Punto Limpio y un Transportista.
+    Permite crear un nuevo Material asociado a un Punto Limpio y a una Obra.
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+
     def post(self, request):
         serializer = MaterialSerializer(data=request.data)
         if serializer.is_valid():
@@ -19,8 +20,10 @@ class CrearMaterial(APIView):
                 material = serializer.save()
             except DjangoValidationError as e:
                 return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
-            return Response(MaterialSerializer(material, context={'request': request}).data,
-                            status=status.HTTP_201_CREATED)
+            return Response(
+                MaterialSerializer(material, context={'request': request}).data,
+                status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListarMateriales(APIView):

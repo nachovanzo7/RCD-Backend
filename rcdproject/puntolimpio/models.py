@@ -25,6 +25,7 @@ class PuntoLimpio(models.Model):
     observaciones = models.TextField("Observaciones", blank=True, null=True, default="")
     clasificacion = models.CharField("Clasificación", max_length=20, choices=CLAIFICACION_CHOICES, default="no_aplica")
     estado = models.TextField("Estado", default="activo")
+    fecha_ingreso = models.DateField("Fecha de Ingreso", null=True, blank=True)
 
 class PuntoAcopio(models.Model):
     CLAIFICACION_CHOICES = [

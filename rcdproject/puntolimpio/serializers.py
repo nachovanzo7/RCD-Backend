@@ -1,18 +1,19 @@
 from rest_framework import serializers
 from .models import PuntoLimpio
-from materiales.serializers import MaterialSerializer  # Asegúrate de la ruta correcta
+from materiales.serializers import MaterialSerializer
 from materiales.models import Material
 
 class PuntoLimpioSerializer(serializers.ModelSerializer):
     # Eliminamos write_only para que se liste también en las respuestas GET
     materiales = MaterialSerializer(many=True, required=False)
+    nombre_obra = serializers.CharField(source='obra.nombre_obra', read_only=True)
     
     class Meta:
         model = PuntoLimpio
         fields = [
             'id', 'obra', 'ubicacion', 'accesibilidad', 'metros_cuadrados',
             'estructura', 'tipo_contenedor', 'puntaje', 'señaletica',
-            'observaciones', 'clasificacion', 'materiales'
+            'observaciones', 'clasificacion', 'materiales', 'estado', 'nombre_obra', 'fecha_ingreso'
         ]
         read_only_fields = ['id']
 
