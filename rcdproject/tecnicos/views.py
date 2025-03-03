@@ -29,7 +29,6 @@ class ListarTecnicos(APIView):
     permission_classes = [RutaProtegida(['superadmin', 'tecnico'])]
     
     def get(self, request):
-        # Filtra solo técnicos que tengan asignado un usuario (usuario no nulo)
         tecnicos = Tecnico.objects.filter(usuario__isnull=False)
         serializer = TecnicoSerializer(tecnicos, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

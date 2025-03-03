@@ -6,7 +6,6 @@ from rest_framework import status
 from django.utils import timezone
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
-
 from .models import Cliente, SolicitudCliente
 from .serializers import (
     ClienteSerializer,
@@ -21,9 +20,7 @@ Usuario = get_user_model()
 
 class RegistroCliente(APIView):
     """
-    Permite que el superadministrador (o el propio usuario en un registro público) cree un nuevo cliente.
-    Se crea primero el Usuario con rol 'cliente' y luego se asocia en Cliente.
-    Si el email ya existe, se retorna un error.
+    Permite que el superadministrador cree un nuevo cliente.
     """
     permission_classes = [AllowAny]
 
@@ -33,7 +30,6 @@ class RegistroCliente(APIView):
         nombre = request.data.get('nombre')
         username = request.data.get('username') or nombre
 
-        # Si ya existe un usuario con ese email, devolver error.
         if Usuario.objects.filter(email=email).exists():
             return Response({"error": "El email ya está registrado."}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -45,16 +41,13 @@ class RegistroCliente(APIView):
             rol='cliente'
         )
 
-        # Inyectar la referencia al usuario en los datos del cliente
         data_cliente = request.data.copy()
         data_cliente['usuario'] = usuario.id
 
         serializer_cliente = ClienteSerializer(data=data_cliente)
         if serializer_cliente.is_valid():
             cliente = serializer_cliente.save()
-            # Crear solicitud con estado "pendiente"
             SolicitudCliente.objects.create(cliente=cliente)
-            # Generar o obtener el token
             token, _ = Token.objects.get_or_create(user=usuario)
             return Response({
                 'mensaje': 'Cliente registrado, pendiente de aprobación.',
@@ -96,7 +89,6 @@ class AprobarSolicitudCliente(APIView):
         solicitud.fecha_solicitud = timezone.now()
         solicitud.save()
         
-        # Obtener el usuario asociado al cliente vía la relación
         try:
             usuario = solicitud.cliente.usuario
         except Usuario.DoesNotExist:
@@ -125,7 +117,6 @@ class RechazarSolicitudCliente(APIView):
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Obtener el Cliente usando el identificador almacenado en cliente_id
         try:
             cliente = Cliente.objects.get(pk=solicitud.cliente_id)
         except Cliente.DoesNotExist:
@@ -133,7 +124,6 @@ class RechazarSolicitudCliente(APIView):
         
         usuario = cliente.usuario
         
-        # Eliminar primero la solicitud, luego el cliente y finalmente el usuario
         solicitud.delete()
         cliente.delete()
         usuario.delete()

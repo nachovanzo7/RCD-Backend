@@ -14,7 +14,6 @@ class CrearSupervisorObra(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]
     
     def post(self, request):
-        # Se asume que en el serializer se maneja la relación con Usuario (campo 'usuario')
         serializer = SupervisorObraSerializer(data=request.data)
         if serializer.is_valid():
             supervisor = serializer.save()

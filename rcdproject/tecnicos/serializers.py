@@ -1,4 +1,4 @@
-# tecnico/serializers.py
+# tecnicoserializers.py
 from rest_framework import serializers
 from .models import Tecnico
 

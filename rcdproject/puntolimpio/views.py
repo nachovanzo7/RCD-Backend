@@ -37,8 +37,7 @@ class ListarPuntosLimpios(APIView):
 
 class ActualizarPuntoLimpio(APIView):
     """
-    Permite actualizar un punto limpio existente.
-    Se usa PATCH para actualización parcial.
+    Permite actualizar un punto limpio existente
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor_obra'])]
     def patch(self, request, pk):
@@ -55,8 +54,7 @@ class ActualizarPuntoLimpio(APIView):
     
 class PuntoLimpioDetalle(APIView):
     """
-    Endpoint para obtener los detalles de un Punto Limpio.
-    Se espera recibir el parámetro "id" por query string.
+    Endpoint para obtener los detalles de un Punto Limpio
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor', 'tecnico'])]
 

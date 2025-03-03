@@ -35,8 +35,7 @@ class ListarCoordinacionesRetiro(APIView):
 
 class AceptarCoordinacionRetiro(APIView):
     """
-    Permite al administrador aceptar una solicitud de coordinación de retiro.
-    Al aceptar, se actualiza el estado a 'aceptado' y se asigna la fecha de retiro.
+    Permite al administrador aceptar una solicitud de coordinación de retir
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
     
@@ -50,7 +49,6 @@ class AceptarCoordinacionRetiro(APIView):
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
         coordinacion.estado = 'aceptado'
-        # Asignar fecha de retiro: si no se envía en request.data, se asigna la fecha actual
         if 'fecha_retiro' not in request.data:
             coordinacion.fecha_retiro = timezone.now()
         else:
@@ -61,7 +59,7 @@ class AceptarCoordinacionRetiro(APIView):
 
 class RechazarCoordinacionRetiro(APIView):
     """
-    Permite al administrador rechazar una solicitud de coordinación de retiro.
+    Permite al administrador rechazar una solicitud de coordinación de retiro
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
     

@@ -41,16 +41,12 @@ def crear_condicion_de_obra(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Formularios)
 def actualizar_punto_limpio(sender, instance, created, **kwargs):
-    # Verifica que se indique actualizar el punto limpio según el formulario
     if instance.punto_limpio == 'si_hay':
         try:
-            # Busca el registro de PuntoLimpio asociado a la misma obra
             punto_limpio = PuntoLimpio.objects.get(obra=instance.obra)
         except PuntoLimpio.DoesNotExist:
-            # Si no existe, puedes decidir crear uno o simplemente no hacer nada
             return
 
-        # Actualiza los campos del punto limpio con los datos del formulario
         punto_limpio.punto_limpio_ubicacion = instance.punto_limpio_ubicacion
         punto_limpio.punto_limpio_estructura = instance.punto_limpio_estructura
         punto_limpio.punto_limpio_tipo_contenedor = instance.punto_limpio_tipo_contenedor
@@ -65,31 +61,22 @@ def actualizar_punto_limpio(sender, instance, created, **kwargs):
         punto_limpio.punto_limpio_señaletica_pisos = instance.punto_limpio_señaletica_pisos
         punto_limpio.punto_limpio_observaciones_pisos = instance.punto_limpio_observaciones_pisos
 
-        # Guarda los cambios
         punto_limpio.save()
 
 
 @receiver(post_save, sender=Formularios)
 def actualizar_punto_acopio(sender, instance, created, **kwargs):
-    # Verifica que en el formulario se haya indicado que hay un punto acopio a actualizar
     if getattr(instance, 'punto_acopio', None) == 'si_hay':
         try:
-            # Busca el registro de PuntoAcopio relacionado con la misma obra
             punto_acopio = PuntoAcopio.objects.get(obra=instance.obra)
         except PuntoAcopio.DoesNotExist:
-            # Si no existe, puedes decidir crear uno o simplemente no hacer nada
             return
 
-        # Actualiza los campos del registro con los datos del formulario.
-        # Asegúrate de que los nombres de los atributos coincidan con los definidos en el modelo.
         punto_acopio.ubicacion = getattr(instance, 'punto_de_acopio_ubicacion', punto_acopio.ubicacion)
         punto_acopio.estructura = getattr(instance, 'punto_de_acopio_estructura', punto_acopio.estructura)
         punto_acopio.tipo_contenedor = getattr(instance, 'punto_de_acopio_tipo_contenedor', punto_acopio.tipo_contenedor)
-        # Si en el formulario se envía información sobre el estado del contenedor u observaciones, actualízalos:
         punto_acopio.observaciones = getattr(instance, 'punto_de_acopio_observaciones', punto_acopio.observaciones)
-        # Aquí podrías actualizar otros campos si es necesario
 
-        # Guarda los cambios en el registro
         punto_acopio.save()
 
     # @receiver(post_save, sender=Material)

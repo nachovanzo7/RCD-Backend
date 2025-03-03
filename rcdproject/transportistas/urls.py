@@ -9,4 +9,3 @@ urlpatterns = [
     path('eliminar/<int:pk>/', EliminarTransportista.as_view(), name='eliminar-transportista'),
 ]
 
-#agregar estados a transportista
