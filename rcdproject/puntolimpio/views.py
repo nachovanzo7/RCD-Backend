@@ -23,7 +23,7 @@ class ListarPuntosLimpios(APIView):
     """
     Lista todos los puntos limpios
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor_obra'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor', 'tecnico'])]
     def get(self, request):
         puntos = PuntoLimpio.objects.all()
         serializer = PuntoLimpioSerializer(puntos, many=True, context={'request': request})

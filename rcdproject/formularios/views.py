@@ -1,47 +1,64 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.db import transaction
+
+# Importa los modelos
+from visitas.models import Visita
+from condiciondeobras.models import CondicionDeObra
+from puntolimpio.models import PuntoLimpio, PuntoAcopio
+from materiales.models import Material
+from obras.models import Obra
+from tecnicos.models import Tecnico
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.db import transaction
+from .models import Formularios
 from .serializers import FormularioSerializer
-from notificaciones.models import Notificacion
-from usuarios.permisos import RutaProtegida
 
 class CrearFormulario(APIView):
     """
-    Permite crear un nuevo registro de Formulario y, en caso de valores críticos,
-    crea una notificación para el cliente asociado a la obra.
+    View para crear un nuevo formulario sin actualizar registros existentes.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'tecnicos'])]
     def post(self, request):
-        serializer = FormularioSerializer(data=request.data)
-        if serializer.is_valid():
-            try:
-                formulario = serializer.save()
-            except DjangoValidationError as e:
-                return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
-            
-            # Diccionario que mapea cada campo con su valor crítico y el nombre del material
-            condiciones = {
-                'escombro_limpio_observaciones': ('lleno', 'escombro'),
-                'plastico_observaciones': ('lleno', 'plástico'),
-                'papel_y_carton_observaciones': ('lleno', 'papel y cartón'),
-                'metales_observaciones': ('mucha_cantidad', 'metales'),
-                'madera_observaciones': ('mucha_cantidad', 'madera'),
-                'mezclados_observaciones': ('mucha_cantidad', 'mezclados'),
-                'peligrosos_observaciones': ('tanque_lleno', 'peligrosos')
-            }
-            
-            # Construir la lista de materiales críticos
-            materiales_criticos = []
-            for campo, (valor_critico, nombre_material) in condiciones.items():
-                if getattr(formulario, campo) == valor_critico:
-                    materiales_criticos.append(nombre_material)
-            
-            # Si se encontraron materiales críticos, crear la notificación
-            if materiales_criticos:
-                mensaje = f"Se recomienda coordinar retiro de {', '.join(materiales_criticos)} en la obra \'{formulario.obra.nombre_obra}\'"
-                Notificacion.objects.create(cliente=formulario.obra.cliente, mensaje=mensaje)
-            
-            return Response(FormularioSerializer(formulario, context={'request': request}).data,
-                            status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = request.data  # Data enviada desde el frontend
+
+        try:
+            with transaction.atomic():
+                # Crear un nuevo formulario con los datos recibidos
+                formulario_serializer = FormularioSerializer(data=data)
+                
+                if formulario_serializer.is_valid():
+                    formulario = formulario_serializer.save()
+                    
+                    return Response(
+                        {"mensaje": "Formulario creado exitosamente", "formulario_id": formulario.id},
+                        status=status.HTTP_201_CREATED
+                    )
+                else:
+                    return Response(
+                        {"error": "Datos inválidos", "detalles": formulario_serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Formularios
+from .serializers import FormularioSerializer
+
+class ListarFormularios(APIView):
+    """
+    View para listar todos los formularios registrados en la base de datos.
+    """
+    def get(self, request):
+        formularios = Formularios.objects.all()  # Obtiene todos los formularios
+        serializer = FormularioSerializer(formularios, many=True)  # Serializa los datos
+        return Response(serializer.data, status=status.HTTP_200_OK)

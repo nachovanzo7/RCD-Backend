@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 from clientes.models import Cliente
+from tecnicos.models import Tecnico 
 
 
 Usuario = get_user_model()
@@ -23,3 +24,10 @@ def create_default_superadmin(sender, **kwargs):
             password='admin123',
             rol='superadmin'
         )
+        
+from django.conf import settings
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def crear_tecnico(sender, instance, created, **kwargs):
+    if created and instance.rol == "tecnico":
+        Tecnico.objects.create(usuario=instance, nombre=instance.first_name or instance.username)

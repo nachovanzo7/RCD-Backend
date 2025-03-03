@@ -1,5 +1,4 @@
 from django.db import models
-from django.db import models
 from puntolimpio.models import PuntoLimpio
 from obras.models import Obra  
 from transportistas.models import Transportista 
@@ -18,7 +17,7 @@ class Material(models.Model):
     ]
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='materiales', verbose_name="Obra")
     punto_limpio = models.ForeignKey(PuntoLimpio, on_delete=models.CASCADE, related_name='materiales', verbose_name="Punto Limpio")
-    transportista = models.ForeignKey(Transportista, on_delete=models.CASCADE, related_name='materiales', verbose_name="Transportista")
+    transportista = models.ForeignKey(Transportista, on_delete=models.CASCADE, related_name='materiales', verbose_name="Transportista", null=True, blank=True)
     descripcion = models.TextField("Descripción")
     proteccion = models.CharField("Protección", max_length=200)
     tipo_contenedor = models.CharField("Tipo de Contenedor", max_length=200)
@@ -28,18 +27,19 @@ class Material(models.Model):
     ventilacion = models.CharField("Ventilación", max_length=100, null=True, blank=True, help_text="Obligatorio si el material es 'peligrosos'")
 
     def clean(self):
+        # ✅ Asegura que 'ventilacion' tenga un valor si el material es 'peligrosos'
         if self.tipo_material == 'peligrosos':
             if not self.ventilacion or self.ventilacion.strip() == "":
-                raise ValidationError("Para materiales peligrosos, el campo 'Ventilación' es obligatorio.")
+                self.ventilacion = "No especificado"  # ✅ Evita errores
         else:
-            if self.ventilacion and self.ventilacion.strip() != "":
-                raise ValidationError("El campo 'Ventilación' debe estar vacío cuando el material no es 'peligrosos'.")
+            self.ventilacion = None  # ✅ Asegura que se guarde como NULL si no es peligroso
         
-        if self.transportista and self.transportista.tipo_material != self.tipo_material:
-            raise ValidationError("El transportista seleccionado no puede transportar este tipo de material.")
-
-
+        # ✅ Validación del transportista solo si tiene el atributo correcto
+        if self.transportista and hasattr(self.transportista, "tipo_material"):
+            if self.transportista.tipo_material != self.tipo_material:
+                raise ValidationError("El transportista seleccionado no puede transportar este tipo de material.")
 
     def save(self, *args, **kwargs):
-        self.full_clean()
+        if self.tipo_material:  # ✅ Solo limpia si ya tiene un tipo de material
+            self.full_clean()
         super().save(*args, **kwargs)

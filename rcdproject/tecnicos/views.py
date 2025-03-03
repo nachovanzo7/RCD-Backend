@@ -21,13 +21,15 @@ class CrearTecnico(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class ListarTecnicos(APIView):
     """
-    Lista todos los técnicos.
+    Lista todos los técnicos que tienen usuario asignado.
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'tecnico'])]
     
     def get(self, request):
-        tecnicos = Tecnico.objects.all()
+        # Filtra solo técnicos que tengan asignado un usuario (usuario no nulo)
+        tecnicos = Tecnico.objects.filter(usuario__isnull=False)
         serializer = TecnicoSerializer(tecnicos, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -2,7 +2,13 @@ from rest_framework import serializers
 from .models import Material
 
 class MaterialSerializer(serializers.ModelSerializer):
+    cantidad = serializers.IntegerField(write_only=True, required=True)
+    
     class Meta:
         model = Material
-        fields = ['id', 'obra','punto_limpio', 'transportista', 'descripcion', 'proteccion', 'tipo_contenedor', 'estado_del_contenedor', 'esta_lleno', 'tipo_material', 'ventilacion']
-        read_only_fields = ['id']
+        fields = [
+            'id', 'obra', 'punto_limpio', 'transportista', 'descripcion',
+            'proteccion', 'tipo_contenedor', 'estado_del_contenedor',
+            'esta_lleno', 'tipo_material', 'ventilacion', 'cantidad'
+        ]
+        read_only_fields = ['id', 'obra', 'punto_limpio']

@@ -95,7 +95,7 @@ class ListarObrasAprobadas(APIView):
     """
     Muestra una lista con las obras que fueron aprobadas
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico', 'tecnico'])]
     def get(self, request):
         obras = Obra.objects.filter(solicitud__estado='Aceptado')
         serializer = ObraSerializer(obras, many=True)
