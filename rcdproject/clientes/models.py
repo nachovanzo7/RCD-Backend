@@ -15,8 +15,6 @@ class Cliente(models.Model):
     direccion_fiscal = models.CharField(max_length=300)
     rut = models.CharField(max_length=300)
 
-    # Si es necesario, puedes implementar métodos para delegar la gestión de contraseña,
-    # aunque normalmente usarás el mecanismo de Usuario.
     def set_password(self, raw_password):
         self.usuario.password = make_password(raw_password)
         self.usuario.save()

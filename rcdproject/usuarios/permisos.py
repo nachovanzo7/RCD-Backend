@@ -2,9 +2,7 @@ from rest_framework.permissions import BasePermission
 
 def RutaProtegida(roles_permitidos):
     """
-    Retorna una clase de permiso que permite el acceso solo a usuarios con alguno de los roles especificados.
-    Ejemplo de uso:
-        permission_classes = [RutaProtegida(['cliente', 'tecnico'])]
+    Retorna una clase de permiso que permite el acceso solo a usuarios con alguno de los roles especificados
     """
     class _RutaProtegida(BasePermission):
         def has_permission(self, request, view):

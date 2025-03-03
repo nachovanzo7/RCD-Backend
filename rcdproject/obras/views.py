@@ -13,9 +13,7 @@ from transportistas.models import Transportista
 
 class RegistroObra(APIView):
     """
-    Permite al cliente registrar una obra, creando automáticamente la solicitud 
-    con estado "pendiente". Los puntos limpios y los materiales se registrarán
-    por separado.
+    Permite al cliente registrar una obra
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
     def post(self, request):
@@ -66,8 +64,7 @@ class AprobarSolicitudObra(APIView):
 
 class RechazarSolicitudObra(APIView):
     """
-    Permite al administrador rechazar una solicitud de obra.
-    Al rechazar, se eliminan los puntos limpios y los materiales asociados a la obra.
+    Permite al administrador rechazar una solicitud de obra
     """
     permission_classes = [RutaProtegida(['superadmin'])]
     def put(self, request, pk):

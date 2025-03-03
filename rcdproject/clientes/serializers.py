@@ -18,7 +18,6 @@ class ClienteSerializer(serializers.ModelSerializer):
         queryset=Usuario.objects.all(),
         required=True
     )
-    # Agregamos el campo email, extrayéndolo del usuario asociado
     email = serializers.CharField(source="usuario.email", read_only=True)
 
     class Meta:
@@ -32,10 +31,7 @@ class ClienteSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         raw_password = validated_data.pop('password')
         usuario = validated_data.pop('usuario')
-        # Se asume que el usuario ya fue creado en la vista y se le asignó la contraseña,
-        # por lo que en este serializer se crea el Cliente asociado.
         cliente = Cliente.objects.create(usuario=usuario, **validated_data)
-        # Si requieres, puedes almacenar el raw_password temporalmente
         cliente._raw_password = raw_password
         return cliente
 

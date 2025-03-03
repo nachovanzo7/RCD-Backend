@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
 from .permisos import RutaProtegida
 from clientes.models import Cliente
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 
 Usuario = get_user_model()
@@ -62,8 +64,6 @@ class CrearUsuario(APIView):
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
@@ -84,8 +84,6 @@ class LoginView(APIView):
         except Usuario.DoesNotExist:
             return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        # Si el usuario es cliente, se valida que su solicitud esté aprobada.
-        # Para otros roles se permite iniciar sesión sin esa verificación.
         if user_obj.rol == 'cliente':
             try:
                 cliente = Cliente.objects.get(usuario=user_obj)

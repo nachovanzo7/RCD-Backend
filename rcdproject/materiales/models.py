@@ -29,19 +29,17 @@ class Material(models.Model):
     
 
     def clean(self):
-        # ✅ Asegura que 'ventilacion' tenga un valor si el material es 'peligrosos'
         if self.tipo_material == 'peligrosos':
             if not self.ventilacion or self.ventilacion.strip() == "":
-                self.ventilacion = "No especificado"  # ✅ Evita errores
+                self.ventilacion = "No especificado"  
         else:
-            self.ventilacion = None  # ✅ Asegura que se guarde como NULL si no es peligroso
+            self.ventilacion = None 
         
-        # ✅ Validación del transportista solo si tiene el atributo correcto
         if self.transportista and hasattr(self.transportista, "tipo_material"):
             if self.transportista.tipo_material != self.tipo_material:
                 raise ValidationError("El transportista seleccionado no puede transportar este tipo de material.")
 
     def save(self, *args, **kwargs):
-        if self.tipo_material:  # ✅ Solo limpia si ya tiene un tipo de material
+        if self.tipo_material:  
             self.full_clean()
         super().save(*args, **kwargs)

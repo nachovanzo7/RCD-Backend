@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 from clientes.models import Cliente
 from tecnicos.models import Tecnico 
+from django.conf import settings
 
 
 Usuario = get_user_model()
@@ -25,7 +26,6 @@ def create_default_superadmin(sender, **kwargs):
             rol='superadmin'
         )
         
-from django.conf import settings
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def crear_tecnico(sender, instance, created, **kwargs):
