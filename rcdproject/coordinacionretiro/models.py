@@ -4,6 +4,7 @@ from empresas_gestoras.models import EmpresaGestora
 from transportistas.models import Transportista
 from materiales.models import Material
 
+
 class CoordinacionRetiro(models.Model):
     ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),

@@ -1,9 +1,12 @@
 from rest_framework import serializers
 from .models import CoordinacionRetiro
+from obras.models import Obra
+from transportistas.models import Transportista
 
 class CoordinacionRetiroSerializer(serializers.ModelSerializer):
-    obra = serializers.StringRelatedField()
-    transportista = serializers.StringRelatedField()
+    obra = serializers.PrimaryKeyRelatedField(queryset=Obra.objects.all())
+    transportista = serializers.PrimaryKeyRelatedField(queryset=Transportista.objects.all())
+
     class Meta:
         model = CoordinacionRetiro
         fields = [
@@ -14,7 +17,6 @@ class CoordinacionRetiroSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'fecha_solicitud']
 
     def validate(self, data):
-        """Validar si el transportista puede transportar el material"""
         transportista = data.get('transportista')
         tipo_material = data.get('tipo_material')
 
