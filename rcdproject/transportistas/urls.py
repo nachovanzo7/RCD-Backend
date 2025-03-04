@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CrearTransportista, ListarTransportistas, ModificarDatosTransportista, EliminarTransportista
+from .views import CrearTransportista, ListarTransportistas, ModificarDatosTransportista, EliminarTransportista, DetalleTransportista
 
 
 urlpatterns = [
@@ -7,5 +7,6 @@ urlpatterns = [
     path('lista/', ListarTransportistas.as_view(), name='lista-transportistas'),
     path('modificar/<int:pk>/', ModificarDatosTransportista.as_view(), name='modificar-transportista'),
     path('eliminar/<int:pk>/', EliminarTransportista.as_view(), name='eliminar-transportista'),
+    path('<int:pk>/', DetalleTransportista.as_view(), name='detalle-transportista'),
 ]
 

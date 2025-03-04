@@ -11,6 +11,7 @@ class CrearEmpresaGestora(APIView):
     Permite registrar una nueva empresa gestora.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
     def post(self, request):
         serializer = EmpresaGestoraSerializer(data=request.data)
         if serializer.is_valid():
@@ -26,16 +27,33 @@ class ListarEmpresasGestoras(APIView):
     Lista todas las empresas gestoras.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
     def get(self, request):
         empresas = EmpresaGestora.objects.all()
         serializer = EmpresaGestoraSerializer(empresas, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ModificarDatosEmpresaGestora(APIView):
+class DetalleEmpresaGestora(APIView):
     """
-    Permite modificar los datos de una empresa gestora
+    Devuelve los detalles de una empresa gestora.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
+    def get(self, request, pk):
+        try:
+            empresa = EmpresaGestora.objects.get(pk=pk)
+        except EmpresaGestora.DoesNotExist:
+            return Response({'error': 'La empresa gestora no fue encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = EmpresaGestoraSerializer(empresa, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ModificarDatosEmpresaGestora(APIView):
+    """
+    Permite modificar los datos de una empresa gestora.
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
     def patch(self, request, pk):
         try:
             empresa = EmpresaGestora.objects.get(pk=pk)
@@ -50,9 +68,10 @@ class ModificarDatosEmpresaGestora(APIView):
 
 class EliminarEmpresaGestora(APIView):
     """
-    Elimina a una empresa gestora
+    Elimina a una empresa gestora.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
     def delete(self, request, pk):
         try:
             empresa = EmpresaGestora.objects.get(pk=pk)
@@ -61,4 +80,3 @@ class EliminarEmpresaGestora(APIView):
         
         empresa.delete()
         return Response({'mensaje': 'La empresa gestora fue eliminada.'}, status=status.HTTP_200_OK)
-    

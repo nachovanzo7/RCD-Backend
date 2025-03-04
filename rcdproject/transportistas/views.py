@@ -10,6 +10,7 @@ class CrearTransportista(APIView):
     Permite al coordinador (administrador) dar de alta un transportista.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
     def post(self, request):
         serializer = TransportistaSerializer(data=request.data)
         if serializer.is_valid():
@@ -26,16 +27,33 @@ class ListarTransportistas(APIView):
     Lista todos los transportistas.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
+    
     def get(self, request):
         transportistas = Transportista.objects.all()
         serializer = TransportistaSerializer(transportistas, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class DetalleTransportista(APIView):
+    """
+    Muestra el detalle de un transportista específico.
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
+    
+    def get(self, request, pk):
+        try:
+            transportista = Transportista.objects.get(pk=pk)
+        except Transportista.DoesNotExist:
+            return Response({'error': 'El transportista no fue encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = TransportistaSerializer(transportista, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ModificarDatosTransportista(APIView):
     """
-    Permite modificar los datos de un transportista
+    Permite modificar los datos de un transportista.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    
     def patch(self, request, pk):
         try:
             transportista = Transportista.objects.get(pk=pk)
@@ -50,9 +68,10 @@ class ModificarDatosTransportista(APIView):
 
 class EliminarTransportista(APIView):
     """
-    Permite eliminar un transportista
+    Permite eliminar un transportista.
     """
     permission_classes = [RutaProtegida(['superadmin'])]
+    
     def delete(self, request, pk):
         try:
             transportista = Transportista.objects.get(pk=pk)

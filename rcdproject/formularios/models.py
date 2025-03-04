@@ -54,13 +54,13 @@ class Formularios(models.Model):
     escombro_observaciones = models.CharField("Escombro observaciones", max_length=500, blank=True, null=True)
 
     # Página 8 (Plástico)
-    plastico = models.CharField("Plástico", max_length=200, choices=[('Aplica','Aplica'), ('No Aplica','No Aplica')], blank=True, null=True, default="no_aplica")
+    plastico = models.CharField("Plástico", max_length=200, choices=[('Aplica','Aplica'), ('No Aplica','No Aplica')], blank=True, null=True, default="No aplica")
     plastico_opciones = models.JSONField("Plástico opciones", blank=True, null=True, default=list)
     plastico_otro = models.CharField("Plástico otro", max_length=200, blank=True, null=True)
     plastico_observaciones = models.CharField("Plástico observaciones", max_length=500, blank=True, null=True)
 
     # Página 9 (Papel y Cartón)
-    papel_y_carton = models.CharField("Papel y cartón", max_length=200, choices=[('Aplica','Aplica'), ('No aplica','No aplica')], blank=True, null=True, default="no_aplica")
+    papel_y_carton = models.CharField("Papel y cartón", max_length=200, choices=[('Aplica','Aplica'), ('no_aplica','No aplica')], blank=True, null=True, default="No aplica")
     papel_carton_opciones = models.JSONField("Papel cartón opciones", blank=True, null=True, default=list)
     papel_carton_otro = models.CharField("Papel cartón otro", max_length=200, blank=True, null=True)
     papel_carton_observaciones = models.CharField("Papel cartón observaciones", max_length=500, blank=True, null=True)

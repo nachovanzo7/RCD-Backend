@@ -26,3 +26,16 @@ class ListarCapacitaciones(APIView):
         capacitaciones = Capacitacion.objects.all()
         serializer = CapacitacionSerializer(capacitaciones, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class DetalleCapacitacion(APIView):
+    """
+    Muestra el detalle de una capacitación específica.
+    """
+    def get(self, request, pk):
+        try:
+            capacitacion = Capacitacion.objects.get(pk=pk)
+        except Capacitacion.DoesNotExist:
+            return Response({'error': 'Capacitación no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = CapacitacionSerializer(capacitacion, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

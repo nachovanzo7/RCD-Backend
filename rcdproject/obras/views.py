@@ -119,7 +119,7 @@ class DetallesObra(APIView):
     """
     Muestra los detalles de una obra
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'cliente'])]
 
     def get(self, request, pk):
         try:

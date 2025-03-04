@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import (
+    DetallesObra,
     RegistroObra,
     ListarSolicitudesObra,
     AprobarSolicitudObra,
@@ -16,5 +17,6 @@ urlpatterns = [
     path('solicitudes/<int:pk>/rechazar/', RechazarSolicitudObra.as_view(), name='rechazar-solicitud-obra'),
     path('aprobadas/', ListarObrasAprobadas.as_view(), name='lista-obras-aprobadas'),
     path('<int:pk>/actualizar/', ModificarDatosObra.as_view(), name='actualizar-obra'),
-    path('<int:pk>/eliminar/', EliminarObra.as_view(), name='eliminar-obra')
+    path('<int:pk>/eliminar/', EliminarObra.as_view(), name='eliminar-obra'),
+    path('<int:pk>/', DetallesObra.as_view(), name='detalles-obra'),
 ]
