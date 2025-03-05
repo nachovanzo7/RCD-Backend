@@ -136,12 +136,12 @@ class RechazarSolicitudCliente(APIView):
 
 class ListarClientesAprobados(APIView):
     """
-    Lista todos los clientes cuya solicitud fue aceptada.
+    Lista todos los clientes cuya solicitud fue aceptada o terminada.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'cliente'])]
     
     def get(self, request):
-        clientes_aprobados = Cliente.objects.filter(solicitud__estado='aceptado')
+        clientes_aprobados = Cliente.objects.filter(solicitud__estado__in=['aceptado', 'terminado'])
         serializer = ClienteSerializer(clientes_aprobados, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -199,3 +199,33 @@ class EliminarCliente(APIView):
         
         cliente.delete()
         return Response({'mensaje': 'Cliente eliminado.'}, status=status.HTTP_200_OK)
+
+class MarcarComoTerminadoSolicitudCliente(APIView):
+    """
+    Permite al administrador marcar una solicitud de cliente como terminada.
+    Solo se puede marcar como terminada una solicitud que esté en estado 'aceptado'.
+    """
+    permission_classes = [RutaProtegida(['superadmin'])]
+
+    def put(self, request, pk):
+        try:
+            solicitud = SolicitudCliente.objects.get(pk=pk)
+        except SolicitudCliente.DoesNotExist:
+            return Response({'error': 'Solicitud no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if solicitud.estado != 'aceptado':
+            return Response(
+                {'error': 'La solicitud debe estar en estado aceptado para ser marcada como terminada.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        solicitud.estado = 'terminado'
+        # Opcional: Si tu modelo tiene un campo para registrar la fecha de término, se puede actualizar
+        if hasattr(solicitud, 'fecha_terminado'):
+            solicitud.fecha_terminado = timezone.now()
+        solicitud.save()
+        
+        return Response(
+            {'mensaje': 'La solicitud ha sido marcada como terminada.'},
+            status=status.HTTP_200_OK
+        )

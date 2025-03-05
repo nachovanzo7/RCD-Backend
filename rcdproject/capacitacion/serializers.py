@@ -7,5 +7,5 @@ class CapacitacionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Capacitacion
-        fields = ['id', 'fecha', 'motivo', 'obra_nombre', 'tecnico_nombre', 'comentario']
+        fields = ['id', 'fecha', 'motivo', 'obra', 'tecnico', 'obra_nombre', 'tecnico_nombre', 'comentario']
         read_only_fields = ['id']

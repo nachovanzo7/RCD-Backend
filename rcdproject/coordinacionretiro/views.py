@@ -81,9 +81,41 @@ class ListarSolicitudesAceptadasCoordinacion(APIView):
     """
     Lista todas las solicitudes de coordinación de retiro aceptadas.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
     
     def get(self, request):
         solicitudes = CoordinacionRetiro.objects.filter(estado='aceptado')
         serializer = CoordinacionRetiroSerializer(solicitudes, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class DetallesCoordinacion(APIView):
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
+
+    def get(self, request, pk):
+        try:
+            coordinacion = CoordinacionRetiro.objects.get(pk=pk)
+        except CoordinacionRetiro.DoesNotExist:
+            return Response({'error': 'Coordinación no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CoordinacionRetiroSerializer(coordinacion, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class ActualizarCoordinacionRetiro(APIView):
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
+
+    def patch(self, request, pk):
+        try:
+            coordinacion = CoordinacionRetiro.objects.get(pk=pk)
+        except CoordinacionRetiro.DoesNotExist:
+            return Response({'error': 'Coordinación no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CoordinacionRetiroSerializer(
+            coordinacion, data=request.data, partial=True, context={'request': request}
+        )
+        if serializer.is_valid():
+            coordinacion_actualizada = serializer.save()
+            return Response(  # Se devuelve la coordinación actualizada
+                CoordinacionRetiroSerializer(coordinacion_actualizada, context={'request': request}).data,
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

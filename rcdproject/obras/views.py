@@ -94,27 +94,11 @@ class ListarObrasAprobadas(APIView):
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico', 'tecnico'])]
     def get(self, request):
-        obras = Obra.objects.filter(solicitud__estado='Aceptado')
+        obras = Obra.objects.filter(solicitud__estado__in=['aceptado', 'terminado'])
         serializer = ObraSerializer(obras, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ModificarDatosObra(APIView):
-    """
-    Modificar datos de obras
-    """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
-    def patch(self, request, pk):
-        try:
-            obra = Obra.objects.get(pk=pk)
-        except Obra.DoesNotExist:
-            return Response({'error': 'Obra no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = ObraSerializer(obra, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class DetallesObra(APIView):
     """
     Muestra los detalles de una obra
@@ -144,3 +128,48 @@ class EliminarObra(APIView):
         obra.delete()
         return Response({'mensaje': 'Obra eliminada.'}, status=status.HTTP_200_OK)
     
+class ActualizarObra(APIView):
+    """
+    Permite actualizar los datos de una obra.
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+
+    def patch(self, request, pk):
+        try:
+            obra = Obra.objects.get(pk=pk)
+        except Obra.DoesNotExist:
+            return Response({'error': 'Obra no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ObraSerializer(obra, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            obra_actualizada = serializer.save()
+            return Response(ObraSerializer(obra_actualizada, context={'request': request}).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class MarcarObraTerminada(APIView):
+    """
+    Vista para marcar una obra como terminada.
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
+
+    def put(self, request, pk):
+        """
+        Actualiza el estado de la solicitud de una obra a 'terminado'.
+        Se espera que se reciba el identificador (pk) de la obra en la URL.
+        """
+        try:
+            obra = Obra.objects.get(pk=pk)
+        except Obra.DoesNotExist:
+            return Response({"error": "Obra no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Accedemos a la solicitud de obra a través del related_name 'solicitud'
+        solicitud = obra.solicitud
+        
+        # Opcional: Verificar si la obra ya se encuentra terminada
+        if solicitud.estado == 'terminado':
+            return Response({"mensaje": "La obra ya se encuentra terminada."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        solicitud.estado = 'terminado'
+        solicitud.save()
+        return Response({"mensaje": "Obra marcada como terminada."}, status=status.HTTP_200_OK)

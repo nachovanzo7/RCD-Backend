@@ -80,3 +80,21 @@ class EliminarTransportista(APIView):
         
         transportista.delete()
         return Response({'mensaje': 'El transportista fue eliminado.'}, status=status.HTTP_200_OK)
+
+class ActualizarTransportista(APIView):
+    """
+    Permite actualizar los datos de un transportista.
+    """
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico'])]
+
+    def patch(self, request, pk):
+        try:
+            transportista = Transportista.objects.get(pk=pk)
+        except Transportista.DoesNotExist:
+            return Response({'error': 'El transportista no fue encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TransportistaSerializer(transportista, data=request.data, partial=True, context={'request': request})
+        if serializer.is_valid():
+            transportista_actualizado = serializer.save()
+            return Response(TransportistaSerializer(transportista_actualizado, context={'request': request}).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

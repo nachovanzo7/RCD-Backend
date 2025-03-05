@@ -4,6 +4,7 @@ from .views import (
     ListarSolicitudesCliente,
     AprobarSolicitudCliente,
     RechazarSolicitudCliente,
+    MarcarComoTerminadoSolicitudCliente,
     ListarClientesAprobados, 
     ActualizarCliente,
     DetalleCliente,
@@ -15,8 +16,9 @@ urlpatterns = [
     path('solicitudes/', ListarSolicitudesCliente.as_view(), name='lista-solicitudes'),
     path('solicitudes/<int:pk>/aprobar/', AprobarSolicitudCliente.as_view(), name='aprobar-solicitud'),
     path('solicitudes/<int:pk>/rechazar/', RechazarSolicitudCliente.as_view(), name='rechazar-solicitud'),
+    path('solicitudes/<int:pk>/terminar/', MarcarComoTerminadoSolicitudCliente.as_view(), name='terminar-solicitud'),
     path('aprobados/', ListarClientesAprobados.as_view(), name='lista-clientes-aprobados'),
     path('<int:pk>/actualizar/', ActualizarCliente.as_view(), name='actualizar-cliente'),
     path('<int:pk>/', DetalleCliente.as_view(), name='obtener-cliente'),
-    path('<int:pk>/eliminar/', EliminarCliente.as_view(), name='eliminar-cliente')
+    path('<int:pk>/eliminar/', EliminarCliente.as_view(), name='eliminar-cliente'),
 ]

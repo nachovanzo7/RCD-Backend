@@ -28,7 +28,7 @@ class SolicitudCliente(models.Model):
     ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),
         ('aceptado', 'Aceptado'),
-        ('rechazado', 'Rechazado'),
+        ('terminado', 'Terminado'),
     ]
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
     fecha_solicitud = models.DateTimeField(auto_now_add=True)

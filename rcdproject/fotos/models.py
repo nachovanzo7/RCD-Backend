@@ -1,8 +1,11 @@
 from django.db import models
-from visitas.models import Visita
+from obras.models import Obra
 
 class Fotos(models.Model):
-    id = models.AutoField(primary_key=True)
-    ubicacion_server = models.CharField(max_length=200)
-    tipo_imagen = models.CharField(max_length=200)
-    visita = models.ForeignKey(Visita, on_delete=models.CASCADE, related_name='visitas')
+    obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='imagenes_set')
+    imagen = models.ImageField(upload_to='obras/imagenes/')
+    descripcion = models.TextField("Descripción", blank=True, null=True)
+    fecha = models.DateField("Fecha", blank=True, null=True)
+
+    def __str__(self):
+        return f"Imagen de {self.obra.nombre_obra}"

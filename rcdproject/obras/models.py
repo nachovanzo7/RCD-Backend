@@ -26,7 +26,7 @@ class Obra(models.Model):
     telefono_encargado_supervisor = models.CharField("Teléfono del Encargado de Supervisor Ambiental", max_length=200, null=True, blank=True, default="No especificado")
     mail_encargado_supervisor = models.CharField("Mail Encargado de Supervisor Ambiental", max_length=200, null=True, blank=True, default="No especificado")
     cant_visitas_mes = models.IntegerField("Cantidad de Visitas al Mes", null=True, blank=True, default=0)
-    imagenes = models.ImageField(upload_to='obras/imagenes/', null=True, blank=True)
+
 
     def __str__(self):
         return self.nombre_obra
@@ -35,7 +35,8 @@ class SolicitudObra(models.Model):
     ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),
         ('aceptado', 'Aceptado'),
-        ('rechazado', 'Rechazado'),
+        ('terminado', 'Terminado'),
+        
     ]
     obra = models.OneToOneField(Obra, on_delete=models.CASCADE, related_name='solicitud', primary_key=True)
     estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='pendiente')
