@@ -10,3 +10,6 @@ class Visita(models.Model):
     motivo = models.CharField("Motivo", max_length=200)
     observaciones = models.TextField("Observaciones", blank=True, null=True)
     acciones_tomadas = models.TextField("Acciones tomadas", blank=True, null=True)
+
+    def __str__(self):
+        return f"Visita {self.id}"

@@ -7,7 +7,7 @@ Usuario = get_user_model()
 class ObraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Obra 
-        fields = ['nombre_obra', 'direccion']
+        fields = ['id', 'nombre_obra', 'direccion']
 
 
 class ClienteSerializer(serializers.ModelSerializer):

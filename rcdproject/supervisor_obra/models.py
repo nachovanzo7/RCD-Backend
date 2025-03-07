@@ -1,9 +1,7 @@
 from django.db import models
 from obras.models import Obra
-
 from django.contrib.auth import get_user_model
 Usuario = get_user_model()
-
 
 class SupervisorObra(models.Model):
     NIVEL_CAPACITACION_CHOICES = [
@@ -16,5 +14,14 @@ class SupervisorObra(models.Model):
     ]
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='supervisor', null=True, blank=True)
     telefono = models.CharField(max_length=50)
-    obra = models.OneToOneField(Obra, on_delete=models.CASCADE, related_name='supervisor')
+    obra = models.ForeignKey(
+        Obra, 
+        on_delete=models.CASCADE, 
+        related_name='supervisores'
+    )
     nivel_capacitacion = models.CharField(max_length=50, choices=NIVEL_CAPACITACION_CHOICES, default='no_hay')
+
+    def __str__(self):
+        if self.usuario:
+            return f"Supervisor: {self.usuario.nombre_completo}"
+        return "Supervisor: No asignado"

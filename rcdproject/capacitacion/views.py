@@ -3,19 +3,40 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Capacitacion
 from .serializers import CapacitacionSerializer
+from supervisor_obra.models import SupervisorObra
+from django.core.exceptions import ObjectDoesNotExist
 
 class CrearCapacitacion(APIView):
     """
-    Permite registrar una nueva capacitación.
+    Permite registrar una nueva capacitación, recibiendo por ejemplo
+    'supervisor_email' en el request y asignándolo como supervisor.
     """
+
     def post(self, request):
-        serializer = CapacitacionSerializer(data=request.data)
+        data = request.data.copy()
+
+        serializer = CapacitacionSerializer(data=data)
         if serializer.is_valid():
-            capacitacion = serializer.save()
+            supervisor_email = data.get('supervisor_email')
+            if supervisor_email:
+                try:
+                    # Buscamos un SupervisorObra cuyo usuario tenga este email
+                    supervisor = SupervisorObra.objects.get(usuario__email=supervisor_email)
+                    # Creamos la capacitación con ese supervisor
+                    capacitacion = serializer.save(supervisor=supervisor)
+                except (SupervisorObra.DoesNotExist, ObjectDoesNotExist):
+                    return Response(
+                        {"error": f"No se encontró un supervisor con el email {supervisor_email}."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+            else:
+                capacitacion = serializer.save()
+
             return Response(
-                CapacitacionSerializer(capacitacion, context={'request': request}).data,
+                CapacitacionSerializer(capacitacion).data,
                 status=status.HTTP_201_CREATED
             )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ListarCapacitaciones(APIView):

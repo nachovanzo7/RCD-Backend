@@ -15,7 +15,6 @@ class CrearTransportista(APIView):
         serializer = TransportistaSerializer(data=request.data)
         if serializer.is_valid():
             transportista = serializer.save()
-            # Se agrega el contexto para que el serializer pueda construir los hiperlinks correctamente.
             return Response(
                 TransportistaSerializer(transportista, context={'request': request}).data,
                 status=status.HTTP_201_CREATED
@@ -26,7 +25,7 @@ class ListarTransportistas(APIView):
     """
     Lista todos los transportistas.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'coordinador'])]
     
     def get(self, request):
         transportistas = Transportista.objects.all()

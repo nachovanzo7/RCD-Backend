@@ -39,30 +39,79 @@ class ActualizarDatosSuperUsuario(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# usuarios/views.py
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from django.core.exceptions import ValidationError as DjangoValidationError
+from usuarios.permisos import RutaProtegida
+from .serializers import CrearUsuarioSerializer
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny
+from obras.models import Obra
+from tecnicos.models import Tecnico
+from supervisor_obra.models import SupervisorObra
+
 class CrearUsuario(APIView):
-    """
-    Permite al superadministrador crear nuevos usuarios con un rol específico.
-    """
     permission_classes = [RutaProtegida(['superadmin'])]
 
     def post(self, request):
+
         serializer = CrearUsuarioSerializer(data=request.data)
-        if serializer.is_valid():
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            usuario = serializer.save()
+        except DjangoValidationError as e:
+            return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
+
+        rol = request.data.get('rol')
+        obra_id = request.data.get('obra')
+
+        if rol == 'tecnico' and obra_id:
             try:
-                usuario = serializer.save()
-            except DjangoValidationError as e:
-                return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
-            token, _ = Token.objects.get_or_create(user=usuario)
-            return Response({
-                "mensaje": "Usuario creado exitosamente.",
-                "usuario": {
-                    "username": usuario.username,
-                    "email": usuario.email,
-                    "rol": usuario.rol,
-                    "token": token.key
-                }
-            }, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                tecnico_obj, created = Tecnico.objects.get_or_create(
+                    usuario=usuario,
+                    defaults={'nombre': usuario.username}
+                )
+                obra = Obra.objects.get(pk=obra_id)
+                obra.tecnico = tecnico_obj
+                obra.save()
+            except Obra.DoesNotExist:
+                pass
+            except Tecnico.DoesNotExist:
+                pass
+
+        elif rol == 'supervisor' and obra_id:
+            try:
+                obra_obj = Obra.objects.get(pk=obra_id)
+
+                sup_obj, created = SupervisorObra.objects.get_or_create(
+                    usuario=usuario,
+                    defaults={
+                        'telefono': '',
+                        'obra': obra_obj,
+                    }
+                )
+            except Obra.DoesNotExist:
+                pass
+            except SupervisorObra.DoesNotExist:
+                pass
+
+        token, _ = Token.objects.get_or_create(user=usuario)
+        return Response({
+            "mensaje": "Usuario creado exitosamente.",
+            "usuario": {
+                "username": usuario.username,
+                "email": usuario.email,
+                "rol": usuario.rol,
+                "token": token.key
+            }
+        }, status=status.HTTP_201_CREATED)
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -87,12 +136,12 @@ class LoginView(APIView):
         if user_obj.rol == 'cliente':
             try:
                 cliente = Cliente.objects.get(usuario=user_obj)
-                if not hasattr(cliente, 'solicitud') or cliente.solicitud.estado != 'aceptado':
+                if not hasattr(cliente, 'solicitud') or cliente.solicitud.estado not in ['aceptado', 'terminado']:
                     return Response({'error': 'Acceso denegado. Cliente no aprobado.'}, status=status.HTTP_403_FORBIDDEN)
             except Cliente.DoesNotExist:
                 return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
         
-        user = authenticate(username=user_obj.username, password=password)
+        user = authenticate(request, username=user_obj.email, password=password)
         if user is None:
             return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
         
@@ -102,3 +151,58 @@ class LoginView(APIView):
             'email': user.email,
             'rol': user.rol
         }, status=status.HTTP_200_OK)
+        
+from tecnicos.models import Tecnico
+from supervisor_obra.models import SupervisorObra
+class ActualizarUsuario(APIView):
+    permission_classes = [RutaProtegida(['superadmin'])]
+
+    def patch(self, request, email):
+        try:
+            usuario = Usuario.objects.get(email=email)
+        except Usuario.DoesNotExist:
+            return Response({"error": "Usuario no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            usuario_actualizado = serializer.save()
+            obra = serializer.validated_data.get('obra')
+
+            # Si es técnico, actualiza su obra relacionada
+            if usuario_actualizado.rol == 'tecnico':
+                tecnico, created = Tecnico.objects.get_or_create(usuario=usuario_actualizado)
+                if obra:
+                    obra.tecnico = tecnico
+                    obra.save()
+
+            # Si es supervisor, actualiza la relación en la app SupervisorObra
+            elif usuario_actualizado.rol == 'supervisor':
+                supervisor, created = SupervisorObra.objects.get_or_create(usuario=usuario_actualizado, defaults={
+                    'telefono': '',
+                    'nivel_capacitacion': 'no_hay',
+                    'obra': obra
+                })
+                if not created and obra:
+                    supervisor.obra = obra
+                    supervisor.save()
+
+            return Response({
+                "mensaje": "Usuario actualizado correctamente.",
+                "usuario": UsuarioSerializer(usuario_actualizado).data
+            }, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+Usuario = get_user_model()
+from usuarios.serializers import UsuarioSerializer
+
+class ListarUsuarios(APIView):
+    permission_classes = [RutaProtegida(['superadmin'])]
+
+    def get(self, request):
+        usuarios = Usuario.objects.all()
+        serializer = UsuarioSerializer(usuarios, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+

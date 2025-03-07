@@ -1,3 +1,4 @@
+# serializers.py (FormularioSerializer)
 from rest_framework import serializers
 from .models import Formularios
 
@@ -8,3 +9,8 @@ class FormularioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Formularios
         fields = '__all__'
+
+    def validate_tecnico(self, value):
+        if value is None:
+            raise serializers.ValidationError("El campo 'tecnico' es obligatorio.")
+        return value

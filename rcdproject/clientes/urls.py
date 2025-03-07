@@ -8,7 +8,9 @@ from .views import (
     ListarClientesAprobados, 
     ActualizarCliente,
     DetalleCliente,
-    EliminarCliente
+    EliminarCliente,
+    ListarObraPorCliente,
+    ListarPuntoLimpioPorCliente
 )
 
 urlpatterns = [
@@ -21,4 +23,7 @@ urlpatterns = [
     path('<int:pk>/actualizar/', ActualizarCliente.as_view(), name='actualizar-cliente'),
     path('<int:pk>/', DetalleCliente.as_view(), name='obtener-cliente'),
     path('<int:pk>/eliminar/', EliminarCliente.as_view(), name='eliminar-cliente'),
+    path('obras/', ListarObraPorCliente.as_view(), name='listar-obra-por-cliente'),
+    path('puntos-limpios/', ListarPuntoLimpioPorCliente.as_view(), name='cliente-puntos-limpios'),
+
 ]

@@ -13,7 +13,7 @@ class AgregarImagenesObra(APIView):
     Se espera que en el request.FILES se envíen múltiples archivos con la clave "imagenes",
     y en request.data se envíen listas (paralelas) en "descripciones" y "fechas".
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'tecnico'])]
     parser_classes = (MultiPartParser, FormParser)
 
     def patch(self, request, pk):
@@ -29,16 +29,13 @@ class AgregarImagenesObra(APIView):
         if not images:
             return Response({'error': 'No se proporcionaron imágenes.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Si no se envían listas para descripciones y fechas, usar valores por defecto
         if not descripciones:
             descripciones = [""] * len(images)
         if not fechas:
             fechas = [None] * len(images)
         
-        # Crear una entrada para cada imagen
         for idx, image in enumerate(images):
             desc = descripciones[idx] if idx < len(descripciones) else ""
-            # Se espera que cada fecha esté en formato YYYY-MM-DD; si la cadena está vacía, se guarda None
             fecha = fechas[idx] if idx < len(fechas) and fechas[idx] != "" else None
             Fotos.objects.create(obra=obra, imagen=image, descripcion=desc, fecha=fecha)
         
@@ -48,7 +45,7 @@ class VerImagenesObra(APIView):
     """
     Devuelve todas las imágenes de una obra, incluyendo descripción y fecha.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'tecnico', 'coordinador', 'coordinadorlogistico'])]
 
     def get(self, request, obra_pk):
         try:
@@ -56,6 +53,6 @@ class VerImagenesObra(APIView):
         except Obra.DoesNotExist:
             return Response({'error': 'Obra no encontrada.'}, status=status.HTTP_404_NOT_FOUND)
         
-        imagenes = obra.imagenes_set.all()  # Se usa el related_name definido en el modelo
+        imagenes = obra.imagenes_set.all()
         serializer = FotosSerializer(imagenes, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)

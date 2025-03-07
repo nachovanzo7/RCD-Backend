@@ -7,12 +7,13 @@ class PuntoLimpioSerializer(serializers.ModelSerializer):
     materiales = MaterialSerializer(many=True, required=False)
     nombre_obra = serializers.CharField(source='obra.nombre_obra', read_only=True)
     
+    
     class Meta:
         model = PuntoLimpio
         fields = [
-            'id', 'obra', 'ubicacion', 'accesibilidad', 'metros_cuadrados',
+            'id', 'obra', 'ubicacion', 'accesibilidad',
             'estructura', 'tipo_contenedor', 'puntaje', 'señaletica',
-            'observaciones', 'clasificacion', 'materiales', 'estado', 'nombre_obra', 'fecha_ingreso'
+            'observaciones', 'clasificacion', 'materiales', 'estado', 'nombre_obra', 'fecha_ingreso', 'cantidad'
         ]
         read_only_fields = ['id']
 
@@ -28,3 +29,8 @@ class PuntoLimpioSerializer(serializers.ModelSerializer):
                     **material_data
                 )
         return punto
+
+nombre_obra = serializers.SerializerMethodField()
+
+def get_nombre_obra(self, obj):
+    return obj.obra.nombre_obra if obj.obra else "Sin obra"

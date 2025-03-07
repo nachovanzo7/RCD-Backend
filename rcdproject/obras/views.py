@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from .models import Obra, SolicitudObra
+from .models import Obra, SolicitudObra, ArchivoObra
 from .serializers import ObraSerializer, SolicitudObraSerializer, SolicitudObraAdminSerializer
 from clientes.models import Cliente
 from puntolimpio.models import PuntoLimpio
@@ -13,13 +13,20 @@ from transportistas.models import Transportista
 
 class RegistroObra(APIView):
     """
-    Permite al cliente registrar una obra
+    Permite al cliente registrar una obra y los archivos adjuntos.
     """
     permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+
     def post(self, request):
         serializer_obra = ObraSerializer(data=request.data)
         if serializer_obra.is_valid():
             obra = serializer_obra.save()
+
+            # Procesar y guardar los archivos enviados
+            archivos = request.FILES.getlist("archivo")
+            for file in archivos:
+                ArchivoObra.objects.create(obra=obra, archivo=file)
+
             # Crear la solicitud de obra con estado "pendiente"
             solicitud = SolicitudObra.objects.create(obra=obra)
             cliente = Cliente.objects.get(pk=obra.cliente.id)
@@ -47,7 +54,7 @@ class AprobarSolicitudObra(APIView):
     """
     Permite al administrador aceptar una solicitud de obra
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     def put(self, request, pk):
         try:
             solicitud = SolicitudObra.objects.get(pk=pk)
@@ -57,7 +64,7 @@ class AprobarSolicitudObra(APIView):
         if solicitud.estado != 'pendiente':
             return Response({'error': 'La solicitud ya ha sido procesada.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        solicitud.estado = 'Aceptado'
+        solicitud.estado = 'aceptado'
         solicitud.fecha_solicitud = timezone.now()
         solicitud.save()
         return Response({'mensaje': 'Su solicitud de obra fue aprobada.'}, status=status.HTTP_200_OK)
@@ -92,7 +99,7 @@ class ListarObrasAprobadas(APIView):
     """
     Muestra una lista con las obras que fueron aprobadas
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico', 'tecnico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico', 'tecnico', 'supervisor'])]
     def get(self, request):
         obras = Obra.objects.filter(solicitud__estado__in=['aceptado', 'terminado'])
         serializer = ObraSerializer(obras, many=True)
@@ -103,7 +110,7 @@ class DetallesObra(APIView):
     """
     Muestra los detalles de una obra
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'cliente', 'tecnico', 'coordinadorlogistico'])]
 
     def get(self, request, pk):
         try:
@@ -151,7 +158,7 @@ class MarcarObraTerminada(APIView):
     """
     Vista para marcar una obra como terminada.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'tecnico'])]
 
     def put(self, request, pk):
         """
@@ -173,3 +180,48 @@ class MarcarObraTerminada(APIView):
         solicitud.estado = 'terminado'
         solicitud.save()
         return Response({"mensaje": "Obra marcada como terminada."}, status=status.HTTP_200_OK)
+    
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
+class ListarObraPorCliente(generics.ListAPIView):
+    serializer_class = ObraSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.rol == 'cliente':
+            return Obra.objects.filter(cliente__usuario__email=user.email)
+        return Obra.objects.none()
+
+from supervisor_obra.serializers import SupervisorObraSerializer
+
+class SupervisoresDeObra(APIView):
+    """
+    Devuelve el supervisor vinculado a la obra (o lista vacía si no hay).
+    Como la relación es OneToOne, solo habrá 1 o ninguno.
+    """
+    permission_classes = [RutaProtegida([
+        'superadmin', 
+        'coordinador', 
+        'coordinadorlogistico',
+        'tecnico',
+        'supervisor',
+        'cliente'
+    ])]
+
+    def get(self, request, pk):
+        try:
+            obra = Obra.objects.get(pk=pk)
+        except Obra.DoesNotExist:
+            return Response({"error": "Obra no encontrada."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Si la obra no tiene supervisor, la relación OneToOne puede no existir
+        if not hasattr(obra, 'supervisor'):
+            return Response([], status=status.HTTP_200_OK)
+        
+        # En tu modelo, la relación se llama 'supervisor'
+        sup = obra.supervisor  
+        serializer = SupervisorObraSerializer(sup) 
+        # Retornamos un array con un solo elemento para que el frontend maneje un array
+        return Response([serializer.data], status=status.HTTP_200_OK)

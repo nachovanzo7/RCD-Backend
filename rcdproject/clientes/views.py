@@ -7,8 +7,10 @@ from django.utils import timezone
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 from .models import Cliente, SolicitudCliente
+from obras.models import Obra
 from .serializers import (
     ClienteSerializer,
+    ObraSerializer,
     SolicitudClienteSerializer,
     SolicitudClienteAdminSerializer,
 )
@@ -62,7 +64,7 @@ class ListarSolicitudesCliente(APIView):
     """
     Lista todas las solicitudes de clientes para revisión del administrador.
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
 
     def get(self, request):
         solicitudes = SolicitudCliente.objects.all()
@@ -74,7 +76,7 @@ class AprobarSolicitudCliente(APIView):
     """
     Permite al administrador aprobar una solicitud.
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     
     def put(self, request, pk):
         try:
@@ -106,7 +108,7 @@ class RechazarSolicitudCliente(APIView):
     """
     Permite al administrador rechazar una solicitud y eliminar el usuario asociado.
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     
     def put(self, request, pk):
         try:
@@ -148,9 +150,10 @@ class ListarClientesAprobados(APIView):
 
 class DetalleCliente(APIView):
     """
-    Devuelve la información de un cliente si su solicitud está aprobada.
+    Devuelve la información de un cliente si su solicitud está aprobada,
+    es decir, si su estado es "aceptado" o "terminado".
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     
     def get(self, request, pk):
         try:
@@ -158,19 +161,22 @@ class DetalleCliente(APIView):
         except Cliente.DoesNotExist:
             return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
-        if cliente.solicitud.estado != 'aceptado':
-            return Response({'error': 'El cliente no está registrado (estado pendiente o rechazado).'}, 
-                            status=status.HTTP_403_FORBIDDEN)
+        if cliente.solicitud.estado not in ['aceptado', 'terminado']:
+            return Response(
+                {'error': 'El cliente no está registrado (estado pendiente o rechazado).'},
+                status=status.HTTP_403_FORBIDDEN
+            )
         
         serializer = ClienteSerializer(cliente, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class ActualizarCliente(APIView):
     """
     Permite actualizar los datos de un cliente.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinador', 'coordinadorlogistico'])]
     
     def patch(self, request, pk):
         try:
@@ -189,7 +195,7 @@ class EliminarCliente(APIView):
     """
     Permite eliminar un cliente.
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
     
     def delete(self, request, pk):
         try:
@@ -205,7 +211,7 @@ class MarcarComoTerminadoSolicitudCliente(APIView):
     Permite al administrador marcar una solicitud de cliente como terminada.
     Solo se puede marcar como terminada una solicitud que esté en estado 'aceptado'.
     """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
 
     def put(self, request, pk):
         try:
@@ -229,3 +235,35 @@ class MarcarComoTerminadoSolicitudCliente(APIView):
             {'mensaje': 'La solicitud ha sido marcada como terminada.'},
             status=status.HTTP_200_OK
         )
+        
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated 
+
+class ListarObraPorCliente(generics.ListAPIView):
+    serializer_class = ObraSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        print("User email:", user.email)
+        qs = Obra.objects.filter(
+                    cliente__usuario__email=user.email,
+                    solicitud__estado__in=['aceptado', 'terminado']
+                )
+        print("Obras encontradas:", qs.count())
+        return qs
+
+
+from puntolimpio.models import PuntoLimpio
+from puntolimpio.serializers import PuntoLimpioSerializer
+
+class ListarPuntoLimpioPorCliente(generics.ListAPIView):
+    serializer_class = PuntoLimpioSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.rol == 'cliente':
+            # Filtra los puntos limpios cuyas obras pertenezcan al cliente logueado (por email)
+            return PuntoLimpio.objects.filter(obra__cliente__usuario__email=user.email)
+        return PuntoLimpio.objects.none()

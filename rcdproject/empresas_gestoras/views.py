@@ -26,7 +26,7 @@ class ListarEmpresasGestoras(APIView):
     """
     Lista todas las empresas gestoras.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente', 'supervisor'])]
     
     def get(self, request):
         empresas = EmpresaGestora.objects.all()

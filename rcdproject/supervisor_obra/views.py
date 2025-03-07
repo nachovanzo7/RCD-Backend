@@ -23,18 +23,21 @@ class CrearSupervisorObra(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+from obras.models import Obra
 class ListarSupervisoresObra(APIView):
-    """
-    Permite listar todos los supervisores de obra.
-    """
-    permission_classes = [RutaProtegida(['superadmin'])]
+    permission_classes = [RutaProtegida(['superadmin', 'tecnico'])]
     
-    def get(self, request):
-        supervisores = SupervisorObra.objects.all()
-        serializer = SupervisorObraSerializer(supervisores, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+    def get(self, request, obra_id):
+        try:
+            obra = Obra.objects.get(pk=obra_id)
+            supervisores = SupervisorObra.objects.filter(obra=obra).select_related('usuario')
+            serializer = SupervisorObraSerializer(supervisores, many=True)
+            return Response(serializer.data)
+        except Obra.DoesNotExist:
+            return Response(
+                {"error": "Obra no encontrada"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 class ModificarDatosSupervisorObra(APIView):
     """

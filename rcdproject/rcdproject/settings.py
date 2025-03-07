@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'puntolimpio',
     'materiales',
     'notificaciones',
+    'mezclados'
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

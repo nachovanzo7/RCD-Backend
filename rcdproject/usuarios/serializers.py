@@ -22,15 +22,27 @@ class ActualizarDatosSuperUsuarioSerializer(serializers.Serializer):
 
 
 class CrearUsuarioSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True,
-        min_length=8,
-        help_text="Debe tener al menos 8 caracteres."
-    )
-
     class Meta:
         model = Usuario
-        fields = ('username', 'email', 'password', 'rol')
+        fields = ('email', 'password', 'rol', 'username')
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        return Usuario.objects.create_user(**validated_data)
+        user = Usuario.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data.get('username', validated_data['email']),  # Auto username
+            password=validated_data['password'],
+            rol=validated_data['rol']
+        )
+        return user
+    
+from obras.models import Obra
+class UsuarioSerializer(serializers.ModelSerializer):
+    rol = serializers.ChoiceField(choices=Usuario.ROLES)
+    
+    class Meta:
+        model = Usuario
+        fields = ['id', 'username', 'email', 'rol', 'first_name', 'last_name']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }

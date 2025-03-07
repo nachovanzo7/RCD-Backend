@@ -11,7 +11,7 @@ class CrearMaterial(APIView):
     """
     Permite crear un nuevo Material asociado a un Punto Limpio y a una Obra.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
 
     def post(self, request):
         serializer = MaterialSerializer(data=request.data)

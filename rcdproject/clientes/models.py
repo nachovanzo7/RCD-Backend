@@ -21,6 +21,12 @@ class Cliente(models.Model):
     
     def check_password(self, raw_password):
         return check_password(raw_password, self.usuario.password)
+    
+    def puede_registrar_mezclado(self):
+        ultimo_registro = self.mezclados.order_by('-fecha_registro').first()
+        if not ultimo_registro:
+            return True
+        return (timezone.now() - ultimo_registro.fecha_registro).days >= 30
 
 
 

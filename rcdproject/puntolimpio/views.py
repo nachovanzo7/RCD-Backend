@@ -12,7 +12,7 @@ class CrearPuntoLimpio(APIView):
     """
     Permite registrar un nuevo Punto Limpio.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
 
     def post(self, request):
         serializer = PuntoLimpioSerializer(data=request.data)
@@ -29,7 +29,7 @@ class ListarPuntosLimpios(APIView):
     """
     Lista todos los puntos limpios
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor', 'tecnico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinadorlogistico', 'tecnico', 'coordinador'])]
     def get(self, request):
         puntos = PuntoLimpio.objects.all()
         serializer = PuntoLimpioSerializer(puntos, many=True, context={'request': request})
@@ -56,7 +56,7 @@ class PuntoLimpioDetalle(APIView):
     """
     Endpoint para obtener los detalles de un Punto Limpio
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'supervisor', 'tecnico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'supervisor', 'tecnico'])]
 
     def get(self, request):
         punto_id = request.query_params.get('id')
