@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'supervisor_obra',
     'obras',
+    'mezclados',
     'tecnicos',
     'visitas',
     'fotos',
@@ -56,7 +57,6 @@ INSTALLED_APPS = [
     'puntolimpio',
     'materiales',
     'notificaciones',
-    'mezclados'
 ]
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

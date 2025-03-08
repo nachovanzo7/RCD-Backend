@@ -20,6 +20,5 @@ urlpatterns = [
     path('api/notificaciones/', include('notificaciones.urls')),
     path('api/usuarios/', include('usuarios.urls')),
     path('api/mezclados/', include('mezclados.urls')),
-    # Agregamos las URLs de la app "fotos"
     path('api/fotos/', include('fotos.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
