@@ -7,7 +7,7 @@ from .serializers import MezcladoSerializer
 from usuarios.permisos import RutaProtegida
 
 class RegistrarMezclado(APIView):
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'supervisor'])]
 
     def post(self, request):
         try:
@@ -30,7 +30,7 @@ class ListarMezclado(APIView):
     """
     Lista todos los registros de Mezclado.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinadorlogistico', 'tecnico', 'coordinador'])]
+    permission_classes = [RutaProtegida(['superadmin', 'cliente', 'coordinadorlogistico', 'supervisor', 'coordinador'])]
 
     def get(self, request):
         mezclados = Mezclado.objects.all()
@@ -42,7 +42,7 @@ class MezcladoDetalle(APIView):
     Endpoint para obtener los detalles de un Mezclado.
     Se espera recibir el parámetro 'id' en la query string.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'cliente', 'tecnico'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'cliente', 'supervisor'])]
 
     def get(self, request):
         mezclado_id = request.query_params.get('id')

@@ -12,7 +12,7 @@ class PuntoLimpioSerializer(serializers.ModelSerializer):
         model = PuntoLimpio
         fields = [
             'id', 'obra', 'ubicacion', 'accesibilidad',
-            'estructura', 'tipo_contenedor', 'puntaje', 'señaletica',
+            'estructura', 'tipo_contenedor', 'puntaje',
             'observaciones', 'clasificacion', 'materiales', 'estado', 'nombre_obra', 'fecha_ingreso', 'cantidad'
         ]
         read_only_fields = ['id']

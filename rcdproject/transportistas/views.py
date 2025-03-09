@@ -25,7 +25,7 @@ class ListarTransportistas(APIView):
     """
     Lista todos los transportistas.
     """
-    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'coordinador'])]
+    permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'coordinador', 'supervisor'])]
     
     def get(self, request):
         transportistas = Transportista.objects.all()

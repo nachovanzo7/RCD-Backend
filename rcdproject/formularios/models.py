@@ -31,7 +31,7 @@ class Formularios(models.Model):
     punto_limpio_estructura = models.CharField("Punto limpio estructura", max_length=200, blank=True, null=True, default="No especificado")
     punto_limpio_tipo_contenedor = models.CharField("Punto limpio tipo contenedor", max_length=200, blank=True, null=True, default="No especificado")
     punto_limpio_estado_contenedor = models.CharField("Punto limpio estado", max_length=200, blank=True, null=True, default="No especificado")
-    punto_limpio_señaletica = models.CharField("Punto limpio señalética", max_length=200, blank=True, null=True, default="No especificado")
+    punto_limpio_senaletica = models.CharField("Punto limpio senalética", max_length=200, blank=True, null=True, default="No especificado")
     punto_limpio_observaciones = models.CharField("Punto limpio observaciones", max_length=500, blank=True, null=True)
 
     # Página 4
