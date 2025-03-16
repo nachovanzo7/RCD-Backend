@@ -66,7 +66,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
-    "https://react-frontend-423289316713.southamerica-east1.run.app",
+    "https://rcd-frontend.onrender.com",
 ]
 
 ROOT_URLCONF = 'rcdproject.rcdproject.urls'
