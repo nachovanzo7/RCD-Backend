@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='PuntoLimpio',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ubicacion', models.CharField(max_length=200, verbose_name='Ubicación')),
+                ('ubicacion', models.CharField(max_length=200, verbose_name='Ubicacion')),
                 ('cantidad', models.IntegerField(verbose_name='Cantidad')),
                 ('metros_cuadrados', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Metros Cuadrados')),
                 ('estructura', models.CharField(max_length=200, verbose_name='Estructura')),
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('puntaje', models.IntegerField(verbose_name='Puntaje')),
                 ('señaletica', models.BooleanField(default=True, verbose_name='Señalética')),
                 ('observaciones', models.TextField(blank=True, null=True, verbose_name='Observaciones')),
-                ('clasificacion', models.CharField(max_length=100, verbose_name='Clasificación')),
+                ('clasificacion', models.CharField(max_length=100, verbose_name='Clasificacion')),
                 ('obra', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='puntos_limpios', to='obras.obra')),
             ],
         ),

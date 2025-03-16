@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from fotos.models import Fotos
+from rcdproject.fotos.models import Fotos
 
 class FotosSerializer(serializers.ModelSerializer):
     class Meta:

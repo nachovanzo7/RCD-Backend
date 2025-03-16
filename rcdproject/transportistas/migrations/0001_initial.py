@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('contacto', models.CharField(max_length=100)),
                 ('email', models.EmailField(max_length=254, unique=True)),
                 ('tipo_vehiculo', models.CharField(max_length=100)),
-                ('tipo_material', models.CharField(choices=[('escombro_limpio', 'Escombro Limpio'), ('plastico', 'Plástico'), ('papel_carton', 'Papel y Cartón'), ('metales', 'Metales'), ('madera', 'Madera'), ('mezclados', 'Mezclados'), ('peligrosos', 'Peligrosos')], max_length=20)),
+                ('tipo_material', models.CharField(choices=[('escombro_limpio', 'Escombro Limpio'), ('plastico', 'Plástico'), ('papel_carton', 'Papel y Carton'), ('metales', 'Metales'), ('madera', 'Madera'), ('mezclados', 'Mezclados'), ('peligrosos', 'Peligrosos')], max_length=20)),
             ],
         ),
     ]

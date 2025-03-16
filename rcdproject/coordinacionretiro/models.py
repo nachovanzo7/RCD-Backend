@@ -1,8 +1,8 @@
 from django.db import models
-from obras.models import Obra
-from empresas_gestoras.models import EmpresaGestora  
-from transportistas.models import Transportista
-from materiales.models import Material
+from rcdproject.obras.models import Obra
+from rcdproject.empresas_gestoras.models import EmpresaGestora  
+from rcdproject.transportistas.models import Transportista
+from rcdproject.materiales.models import Material
 
 class CoordinacionRetiro(models.Model):
     ESTADO_CHOICES = [
@@ -12,7 +12,7 @@ class CoordinacionRetiro(models.Model):
         ('inactivo', 'Inactivo'),
     ]
 
-    descripcion = models.TextField("Descripción")
+    descripcion = models.TextField("Descripcion")
     observaciones = models.TextField("Observaciones", blank=True, null=True)
     
     estado = models.CharField(
@@ -85,4 +85,4 @@ class CoordinacionRetiro(models.Model):
     )
 
     def __str__(self):
-        return f"Coordinación ({self.pk}) - {self.descripcion}"
+        return f"Coordinacion ({self.pk}) - {self.descripcion}"

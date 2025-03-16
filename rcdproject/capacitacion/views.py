@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Capacitacion
 from .serializers import CapacitacionSerializer
-from supervisor_obra.models import SupervisorObra
+from rcdproject.supervisor_obra.models import SupervisorObra
 from django.core.exceptions import ObjectDoesNotExist
 
 class CrearCapacitacion(APIView):

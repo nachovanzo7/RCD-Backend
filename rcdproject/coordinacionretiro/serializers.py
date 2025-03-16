@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from .models import CoordinacionRetiro
-from obras.models import Obra
-from transportistas.models import Transportista
-from empresas_gestoras.models import EmpresaGestora
+from rcdproject.obras.models import Obra
+from rcdproject.transportistas.models import Transportista
+from rcdproject.empresas_gestoras.models import EmpresaGestora
 
 class CoordinacionRetiroSerializer(serializers.ModelSerializer):
     transportista = serializers.PrimaryKeyRelatedField(

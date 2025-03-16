@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='PuntoAcopio',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('ubicacion', models.CharField(default='No especificado', max_length=200, verbose_name='Ubicación')),
+                ('ubicacion', models.CharField(default='No especificado', max_length=200, verbose_name='Ubicacion')),
                 ('accesibilidad', models.CharField(choices=[('en_planta_baja', 'En Planta Baja'), ('en_pisos', 'En Pisos')], default='en_planta_baja', max_length=20, verbose_name='Accesibilidad')),
                 ('metros_cuadrados', models.DecimalField(decimal_places=2, default=0, max_digits=10, verbose_name='Metros Cuadrados')),
                 ('estructura', models.CharField(default='No especificado', max_length=200, verbose_name='Estructura')),
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('puntaje', models.IntegerField(default=0, null=True, verbose_name='Puntaje')),
                 ('señaletica', models.BooleanField(default=True, verbose_name='Señalética')),
                 ('observaciones', models.TextField(blank=True, default='', null=True, verbose_name='Observaciones')),
-                ('clasificacion', models.CharField(choices=[('correcta', 'Correcta'), ('a_mejorar', 'A Mejorar'), ('incorrecta', 'Incorrecta'), ('no_aplica', 'No Aplica')], default='no_aplica', max_length=20, verbose_name='Clasificación')),
+                ('clasificacion', models.CharField(choices=[('correcta', 'Correcta'), ('a_mejorar', 'A Mejorar'), ('incorrecta', 'Incorrecta'), ('no_aplica', 'No Aplica')], default='no_aplica', max_length=20, verbose_name='Clasificacion')),
                 ('estado', models.TextField(default='activo', verbose_name='Estado')),
                 ('obra', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='punto_acopio', to='obras.obra')),
             ],

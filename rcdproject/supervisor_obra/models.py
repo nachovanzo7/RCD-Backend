@@ -1,5 +1,5 @@
 from django.db import models
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 from django.contrib.auth import get_user_model
 Usuario = get_user_model()
 

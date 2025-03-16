@@ -102,17 +102,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='formularios',
             name='papel_carton_observaciones',
-            field=models.CharField(blank=True, max_length=500, null=True, verbose_name='Papel cartón observaciones'),
+            field=models.CharField(blank=True, max_length=500, null=True, verbose_name='Papel carton observaciones'),
         ),
         migrations.AddField(
             model_name='formularios',
             name='papel_carton_opciones',
-            field=models.JSONField(blank=True, default=list, null=True, verbose_name='Papel cartón opciones'),
+            field=models.JSONField(blank=True, default=list, null=True, verbose_name='Papel carton opciones'),
         ),
         migrations.AddField(
             model_name='formularios',
             name='papel_carton_otro',
-            field=models.CharField(blank=True, max_length=200, null=True, verbose_name='Papel cartón otro'),
+            field=models.CharField(blank=True, max_length=200, null=True, verbose_name='Papel carton otro'),
         ),
         migrations.AddField(
             model_name='formularios',

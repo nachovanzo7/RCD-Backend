@@ -4,7 +4,7 @@ from rest_framework import status
 from django.utils import timezone
 from .models import CoordinacionRetiro
 from .serializers import CoordinacionRetiroSerializer
-from usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.permisos import RutaProtegida
 
 class CrearCoordinacionRetiro(APIView):
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente', 'supervisor'])]
@@ -77,11 +77,11 @@ class RechazarCoordinacionRetiro(APIView):
         return Response({'mensaje': 'Solicitud de coordinación de retiro rechazada.'}, status=status.HTTP_200_OK)
 
 
-from supervisor_obra.models import SupervisorObra
+from rcdproject.supervisor_obra.models import SupervisorObra
 
 class ListarSolicitudesAceptadasCoordinacion(APIView):
     """
-    Lista todas las solicitudes de coordinación de retiro aceptadas.
+    Lista todas las solicitudes de coordinacion de retiro aceptadas.
     - Los superadmin, coordinadores y técnicos ven todas.
     - Los supervisores solo ven las coordinaciones de las obras donde están asignados.
     - Los clientes solo ven las coordinaciones de sus propias obras.
@@ -133,10 +133,10 @@ class ActualizarCoordinacionRetiro(APIView):
     permission_classes = [RutaProtegida(['superadmin', 'coordinadorlogistico', 'cliente'])]
 
     def patch(self, request, pk):
-        # Se obtiene la coordinación o se lanza 404 si no existe
+        # Se obtiene la coordinacion o se lanza 404 si no existe
         coordinacion = get_object_or_404(CoordinacionRetiro, pk=pk)
 
-        # Se instancia el serializer con partial=True para permitir actualización parcial
+        # Se instancia el serializer con partial=True para permitir actualizacion parcial
         serializer = CoordinacionRetiroSerializer(
             coordinacion,
             data=request.data,

@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('imagen', models.ImageField(upload_to='obras/imagenes/')),
-                ('descripcion', models.TextField(blank=True, null=True, verbose_name='Descripción')),
+                ('descripcion', models.TextField(blank=True, null=True, verbose_name='Descripcion')),
                 ('fecha', models.DateField(blank=True, null=True, verbose_name='Fecha')),
                 ('obra', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='imagenes_set', to='obras.obra')),
             ],

@@ -20,7 +20,7 @@ class Usuario(AbstractUser):
     )
     
     email = models.EmailField(
-        _('Correo electrónico'),
+        _('Correo electronico'),
         unique=True,
         db_index=True
     )

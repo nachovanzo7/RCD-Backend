@@ -4,7 +4,7 @@ from rest_framework import status
 from .models import Mezclado
 import traceback
 from .serializers import MezcladoSerializer
-from usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.permisos import RutaProtegida
 
 class RegistrarMezclado(APIView):
     permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico', 'supervisor'])]

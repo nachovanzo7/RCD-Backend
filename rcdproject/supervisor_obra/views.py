@@ -2,9 +2,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView 
 from rest_framework.response import Response
 from rest_framework import status
-from .models import SupervisorObra
-from .serializers import SupervisorObraSerializer
-from usuarios.permisos import RutaProtegida
+from rcdproject.supervisor_obra.models import SupervisorObra
+from rcdproject.supervisor_obra.serializers import SupervisorObraSerializer
+from rcdproject.usuarios.permisos import RutaProtegida
 
 class CrearSupervisorObra(APIView):
     """
@@ -23,7 +23,7 @@ class CrearSupervisorObra(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 class ListarSupervisoresObra(APIView):
     permission_classes = [RutaProtegida(['superadmin', 'tecnico'])]
     

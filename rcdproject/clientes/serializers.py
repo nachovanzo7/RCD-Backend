@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Cliente, SolicitudCliente
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 from django.contrib.auth import get_user_model
 Usuario = get_user_model()
 

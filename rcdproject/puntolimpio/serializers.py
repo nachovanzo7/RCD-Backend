@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import PuntoLimpio
-from materiales.serializers import MaterialSerializer
-from materiales.models import Material
+from rcdproject.materiales.serializers import MaterialSerializer
+from rcdproject.materiales.models import Material
 
 class PuntoLimpioSerializer(serializers.ModelSerializer):
     materiales = MaterialSerializer(many=True, required=False)

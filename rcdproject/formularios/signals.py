@@ -1,11 +1,11 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import datetime
-from formularios.models import Formularios
-from materiales.models import Material
-from visitas.models import Visita
-from condiciondeobras.models import CondicionDeObra
-from puntolimpio.models import PuntoLimpio, PuntoAcopio
+from rcdproject.formularios.models import Formularios
+from rcdproject.materiales.models import Material
+from rcdproject.visitas.models import Visita
+from rcdproject.condiciondeobras.models import CondicionDeObra
+from rcdproject.puntolimpio.models import PuntoLimpio, PuntoAcopio
 
 @receiver(post_save, sender=Formularios)
 def crear_visita(sender, instance, created, **kwargs):

@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from notificaciones.models import Notificacion
+from rcdproject.notificaciones.models import Notificacion
 from .serializers import NotificacionSerializer
 
 @api_view(['GET'])

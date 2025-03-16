@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='formularios',
             name='papel_y_carton',
-            field=models.CharField(blank=True, choices=[('Aplica', 'Aplica'), ('No aplica', 'No aplica')], default='no_aplica', max_length=200, null=True, verbose_name='Papel y cartón'),
+            field=models.CharField(blank=True, choices=[('Aplica', 'Aplica'), ('No aplica', 'No aplica')], default='no_aplica', max_length=200, null=True, verbose_name='Papel y carton'),
         ),
         migrations.AlterField(
             model_name='formularios',

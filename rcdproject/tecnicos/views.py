@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Tecnico
 from .serializers import TecnicoSerializer
-from usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.permisos import RutaProtegida
 
 class CrearTecnico(APIView):
     """

@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='obra',
             name='duracion_obra',
-            field=models.CharField(blank=True, default='No especificado', max_length=100, null=True, verbose_name='Duración de Obra'),
+            field=models.CharField(blank=True, default='No especificado', max_length=100, null=True, verbose_name='Duracion de Obra'),
         ),
         migrations.AddField(
             model_name='obra',
@@ -105,6 +105,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='obra',
             name='direccion',
-            field=models.CharField(blank=True, default='No especificado', max_length=200, null=True, verbose_name='Dirección'),
+            field=models.CharField(blank=True, default='No especificado', max_length=200, null=True, verbose_name='Direccion'),
         ),
     ]

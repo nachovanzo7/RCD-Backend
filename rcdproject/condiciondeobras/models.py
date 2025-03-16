@@ -1,5 +1,5 @@
 from django.db import models
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 
 class CondicionDeObra(models.Model):
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name='condiciones_de_obra')

@@ -1,7 +1,7 @@
 # models.py
 from django.db import models
-from tecnicos.models import Tecnico
-from obras.models import Obra
+from rcdproject.tecnicos.models import Tecnico
+from rcdproject.obras.models import Obra
 
 class Formularios(models.Model):
     id = models.AutoField(primary_key=True)
@@ -27,7 +27,7 @@ class Formularios(models.Model):
     # Página 3 (Punto Limpio)
     PUNTOLIMPIO_CHOICES = [('Hay', 'Hay'), ('No Hay', 'No Hay')]
     punto_limpio = models.CharField("Punto limpio", max_length=200, choices=PUNTOLIMPIO_CHOICES, blank=True, null=True, default="No Hay")
-    punto_limpio_ubicacion = models.CharField("Punto limpio ubicación", max_length=200, blank=True, null=True, default="No especificado")
+    punto_limpio_ubicacion = models.CharField("Punto limpio ubicacion", max_length=200, blank=True, null=True, default="No especificado")
     punto_limpio_estructura = models.CharField("Punto limpio estructura", max_length=200, blank=True, null=True, default="No especificado")
     punto_limpio_tipo_contenedor = models.CharField("Punto limpio tipo contenedor", max_length=200, blank=True, null=True, default="No especificado")
     punto_limpio_estado_contenedor = models.CharField("Punto limpio estado", max_length=200, blank=True, null=True, default="No especificado")
@@ -60,11 +60,11 @@ class Formularios(models.Model):
     plastico_otro = models.CharField("Plástico otro", max_length=200, blank=True, null=True)
     plastico_observaciones = models.CharField("Plástico observaciones", max_length=500, blank=True, null=True)
 
-    # Página 9 (Papel y Cartón)
-    papel_y_carton = models.CharField("Papel y cartón", max_length=200, choices=[('Aplica','Aplica'), ('No Aplica','No Aplica')], blank=True, null=True, default="No Aplica")
-    papel_carton_opciones = models.JSONField("Papel cartón opciones", blank=True, null=True, default=list)
-    papel_carton_otro = models.CharField("Papel cartón otro", max_length=200, blank=True, null=True)
-    papel_carton_observaciones = models.CharField("Papel cartón observaciones", max_length=500, blank=True, null=True)
+    # Página 9 (Papel y Carton)
+    papel_y_carton = models.CharField("Papel y carton", max_length=200, choices=[('Aplica','Aplica'), ('No Aplica','No Aplica')], blank=True, null=True, default="No Aplica")
+    papel_carton_opciones = models.JSONField("Papel carton opciones", blank=True, null=True, default=list)
+    papel_carton_otro = models.CharField("Papel carton otro", max_length=200, blank=True, null=True)
+    papel_carton_observaciones = models.CharField("Papel carton observaciones", max_length=500, blank=True, null=True)
 
     # Página 10 (Metales)
     metales = models.CharField("Metales", max_length=200, choices=[('Aplica','Aplica'), ('No Aplica','No Aplica')], blank=True, null=True, default="No Aplica")

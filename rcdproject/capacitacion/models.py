@@ -1,8 +1,8 @@
 # capacitacion/models.py (o donde definas tu modelo Capacitacion)
 from django.db import models
-from obras.models import Obra
-from tecnicos.models import Tecnico
-from supervisor_obra.models import SupervisorObra  # Ajusta la ruta según tu estructura
+from rcdproject.obras.models import Obra
+from rcdproject.tecnicos.models import Tecnico
+from rcdproject.supervisor_obra.models import SupervisorObra  # Ajusta la ruta según tu estructura
 
 class Capacitacion(models.Model):
     id = models.AutoField(primary_key=True)

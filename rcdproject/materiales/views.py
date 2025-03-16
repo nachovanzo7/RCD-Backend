@@ -5,7 +5,7 @@ from rest_framework import status
 from .models import Material
 from .serializers import MaterialSerializer
 from django.core.exceptions import ValidationError as DjangoValidationError
-from usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.permisos import RutaProtegida
 
 class CrearMaterial(APIView):
     """

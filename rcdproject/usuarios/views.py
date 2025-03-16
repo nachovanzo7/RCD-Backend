@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import AllowAny
 from .permisos import RutaProtegida
-from clientes.models import Cliente
+from rcdproject.clientes.models import Cliente
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
@@ -45,14 +45,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.core.exceptions import ValidationError as DjangoValidationError
-from usuarios.permisos import RutaProtegida
-from .serializers import CrearUsuarioSerializer
+from rcdproject.usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.serializers import CrearUsuarioSerializer
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import AllowAny
-from obras.models import Obra
-from tecnicos.models import Tecnico
-from supervisor_obra.models import SupervisorObra
+from rcdproject.obras.models import Obra
+from rcdproject.tecnicos.models import Tecnico
+from rcdproject.supervisor_obra.models import SupervisorObra
 
 class CrearUsuario(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]
@@ -113,6 +113,8 @@ class CrearUsuario(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
+import logging
+logger = logging.getLogger(__name__)
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
@@ -120,40 +122,45 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        if not email or not password:
-            return Response(
-                {'error': 'Por favor, ingresa el email y la contraseña.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
         try:
-            user_obj = Usuario.objects.get(email=email)
-        except Usuario.DoesNotExist:
-            return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        if user_obj.rol == 'cliente':
+            email = request.data.get('email')
+            password = request.data.get('password')
+            if not email or not password:
+                return Response(
+                    {'error': 'Por favor, ingresa el email y la contraseña.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
             try:
-                cliente = Cliente.objects.get(usuario=user_obj)
-                if not hasattr(cliente, 'solicitud') or cliente.solicitud.estado not in ['aceptado', 'terminado']:
-                    return Response({'error': 'Acceso denegado. Cliente no aprobado.'}, status=status.HTTP_403_FORBIDDEN)
-            except Cliente.DoesNotExist:
-                return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+                user_obj = Usuario.objects.get(email=email)
+            except Usuario.DoesNotExist:
+                return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            # Verifica si es cliente y si está aprobado (ajusta según tu lógica)
+            if user_obj.rol == 'cliente':
+                try:
+                    cliente = Cliente.objects.get(usuario=user_obj)
+                    if not hasattr(cliente, 'solicitud') or cliente.solicitud.estado not in ['aceptado', 'terminado']:
+                        return Response({'error': 'Acceso denegado. Cliente no aprobado.'}, status=status.HTTP_403_FORBIDDEN)
+                except Cliente.DoesNotExist:
+                    return Response({'error': 'Cliente no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+            user = authenticate(request, username=user_obj.email, password=password)
+            if user is None:
+                return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'email': user.email,
+                'rol': user.rol
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.exception("Error en LoginView:")
+            return Response({'error': 'Error interno en el servidor.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        user = authenticate(request, username=user_obj.email, password=password)
-        if user is None:
-            return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'email': user.email,
-            'rol': user.rol
-        }, status=status.HTTP_200_OK)
-        
-from tecnicos.models import Tecnico
-from supervisor_obra.models import SupervisorObra
+from rcdproject.tecnicos.models import Tecnico
+from rcdproject.supervisor_obra.models import SupervisorObra
 class ActualizarUsuario(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]
 
@@ -196,7 +203,7 @@ class ActualizarUsuario(APIView):
     
 
 Usuario = get_user_model()
-from usuarios.serializers import UsuarioSerializer
+from rcdproject.usuarios.serializers import UsuarioSerializer
 
 class ListarUsuarios(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]

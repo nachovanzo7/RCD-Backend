@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('mensaje', models.CharField(max_length=500, verbose_name='Mensaje')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creación')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creacion')),
                 ('cliente', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='notificaciones', to='clientes.cliente')),
             ],
         ),

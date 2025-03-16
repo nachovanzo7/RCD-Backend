@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.permisos import RutaProtegida
 from rest_framework import status
 from django.utils import timezone
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import secrets
 from .models import Cliente, SolicitudCliente
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 from .serializers import (
     ClienteSerializer,
     ObraSerializer,
@@ -62,7 +62,7 @@ class RegistroCliente(APIView):
 
 class ListarSolicitudesCliente(APIView):
     """
-    Lista todas las solicitudes de clientes para revisión del administrador.
+    Lista todas las solicitudes de clientes para revision del administrador.
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
 
@@ -150,7 +150,7 @@ class ListarClientesAprobados(APIView):
 
 class DetalleCliente(APIView):
     """
-    Devuelve la información de un cliente si su solicitud está aprobada,
+    Devuelve la informacion de un cliente si su solicitud está aprobada,
     es decir, si su estado es "aceptado" o "terminado".
     """
     permission_classes = [RutaProtegida(['superadmin', 'coordinador', 'coordinadorlogistico'])]
@@ -254,8 +254,8 @@ class ListarObraPorCliente(generics.ListAPIView):
         return qs
 
 
-from puntolimpio.models import PuntoLimpio
-from puntolimpio.serializers import PuntoLimpioSerializer
+from rcdproject.puntolimpio.models import PuntoLimpio
+from rcdproject.puntolimpio.serializers import PuntoLimpioSerializer
 
 class ListarPuntoLimpioPorCliente(generics.ListAPIView):
     serializer_class = PuntoLimpioSerializer

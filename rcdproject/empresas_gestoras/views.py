@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import EmpresaGestora
 from .serializers import EmpresaGestoraSerializer
-from usuarios.permisos import RutaProtegida 
+from rcdproject.usuarios.permisos import RutaProtegida 
 
 class CrearEmpresaGestora(APIView):
     """

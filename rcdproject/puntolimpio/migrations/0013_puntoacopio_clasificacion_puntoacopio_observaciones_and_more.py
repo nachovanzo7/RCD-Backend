@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='puntoacopio',
             name='clasificacion',
-            field=models.CharField(choices=[('correcta', 'Correcta'), ('a_mejorar', 'A Mejorar'), ('incorrecta', 'Incorrecta'), ('no_aplica', 'No Aplica')], default='no_aplica', max_length=20, verbose_name='Clasificación'),
+            field=models.CharField(choices=[('correcta', 'Correcta'), ('a_mejorar', 'A Mejorar'), ('incorrecta', 'Incorrecta'), ('no_aplica', 'No Aplica')], default='no_aplica', max_length=20, verbose_name='Clasificacion'),
         ),
         migrations.AddField(
             model_name='puntoacopio',

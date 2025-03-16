@@ -1,6 +1,6 @@
 from django.db import models
-from obras.models import Obra
-from tecnicos.models import Tecnico
+from rcdproject.obras.models import Obra
+from rcdproject.tecnicos.models import Tecnico
 
 class Visita(models.Model):
     id = models.AutoField(primary_key=True)

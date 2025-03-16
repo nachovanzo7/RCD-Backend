@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='puntolimpio',
             name='clasificacion',
-            field=models.CharField(choices=[('correcta', 'Correcta'), ('a_mejorar', 'A Mejorar'), ('incorrecta', 'Incorrecta'), ('no_aplica', 'No Aplica')], default='no_aplica', max_length=20, verbose_name='Clasificación'),
+            field=models.CharField(choices=[('correcta', 'Correcta'), ('a_mejorar', 'A Mejorar'), ('incorrecta', 'Incorrecta'), ('no_aplica', 'No Aplica')], default='no_aplica', max_length=20, verbose_name='Clasificacion'),
         ),
         migrations.AlterField(
             model_name='puntolimpio',
@@ -48,6 +48,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='puntolimpio',
             name='ubicacion',
-            field=models.CharField(default='No especificado', max_length=200, verbose_name='Ubicación'),
+            field=models.CharField(default='No especificado', max_length=200, verbose_name='Ubicacion'),
         ),
     ]

@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import PuntoLimpio
 from .serializers import PuntoLimpioSerializer
-from materiales.serializers import MaterialSerializer
-from usuarios.permisos import RutaProtegida
+from rcdproject.materiales.serializers import MaterialSerializer
+from rcdproject.usuarios.permisos import RutaProtegida
 
 
 class CrearPuntoLimpio(APIView):

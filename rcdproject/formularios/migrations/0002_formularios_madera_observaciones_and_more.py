@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='formularios',
             name='madera_observaciones',
-            field=models.CharField(choices=[('a_granel', 'A granel'), ('mala_organizacion', 'Mala organización'), ('mucha_cantidad', 'Mucha cantidad'), ('se_esta_reutilizando_en_obra', 'Se está reutilizando en obra'), ('contaminado_con_aceite_pintura_pegamento', 'Contaminado con aceite, pintura, pegamento'), ('otro', 'Otro')], default='a_granel', max_length=500, verbose_name='Madera'),
+            field=models.CharField(choices=[('a_granel', 'A granel'), ('mala_organizacion', 'Mala organizacion'), ('mucha_cantidad', 'Mucha cantidad'), ('se_esta_reutilizando_en_obra', 'Se está reutilizando en obra'), ('contaminado_con_aceite_pintura_pegamento', 'Contaminado con aceite, pintura, pegamento'), ('otro', 'Otro')], default='a_granel', max_length=500, verbose_name='Madera'),
             preserve_default=False,
         ),
         migrations.AlterField(

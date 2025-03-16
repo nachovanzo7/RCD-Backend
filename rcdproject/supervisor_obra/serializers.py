@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import SupervisorObra
+from rcdproject.supervisor_obra.models import SupervisorObra
 
 class SupervisorObraSerializer(serializers.ModelSerializer):
     usuario_id = serializers.IntegerField(source='usuario.id', read_only=True)

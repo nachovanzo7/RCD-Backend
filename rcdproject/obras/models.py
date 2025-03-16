@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
-from clientes.models import Cliente
-from tecnicos.models import Tecnico
+from rcdproject.clientes.models import Cliente
+from rcdproject.tecnicos.models import Tecnico
 
 class Obra(models.Model):
     id = models.AutoField(primary_key=True)
@@ -13,12 +13,12 @@ class Obra(models.Model):
     localidad = models.CharField("Localidad", max_length=200, null=True, blank=True, default="No especificado")
     barrio = models.CharField("Barrio", max_length=200, null=True, blank=True, default="No especificado")
     tipo_construccion = models.CharField("Tipo de Construccion", max_length=200, null=True, blank=True, default="No especificado")
-    direccion = models.CharField("Dirección", max_length=200, null=True, blank=True, default="No especificado")
+    direccion = models.CharField("Direccion", max_length=200, null=True, blank=True, default="No especificado")
     m2_obra = models.DecimalField("M2 Obra", max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     cant_pisos = models.IntegerField("Cantidad de Pisos", null=True, blank=True, default=0)
     pedido = models.CharField("Pedido", max_length=200, null=True, blank=True, default="No especificado")
     inicio_obra = models.DateField("Inicio de Obra", null=True, blank=True)
-    duracion_obra = models.CharField("Duración de Obra", max_length=100, null=True, blank=True, default="No especificado")
+    duracion_obra = models.CharField("Duracion de Obra", max_length=100, null=True, blank=True, default="No especificado")
     etapa_obra = models.CharField("Etapa de Obra", max_length=100, null=True, blank=True, default="No especificado")
     nombre_jefe_obra = models.CharField("Nombre Jefe de Obra", max_length=200, null=True, blank=True, default="No especificado")
     telefono_jefe_obra = models.CharField("Teléfono Jefe de Obra", max_length=200, null=True, blank=True, default="No especificado")

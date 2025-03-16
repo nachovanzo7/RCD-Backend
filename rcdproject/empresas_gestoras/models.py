@@ -5,7 +5,7 @@ class EmpresaGestora(models.Model):
     TIPOS_MATERIAL_CHOICES = [
         ('escombro_limpio', 'Escombro Limpio'),
         ('plastico', 'Plástico'),
-        ('papel_carton', 'Papel y Cartón'),
+        ('papel_carton', 'Papel y Carton'),
         ('metales', 'Metales'),
         ('madera', 'Madera'),
         ('mezclados', 'Mezclados'),

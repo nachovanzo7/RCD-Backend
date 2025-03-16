@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from .models import Obra, SolicitudObra, ArchivoObra
-from .serializers import ObraSerializer, SolicitudObraSerializer, SolicitudObraAdminSerializer
-from clientes.models import Cliente
-from puntolimpio.models import PuntoLimpio
-from materiales.models import Material
-from usuarios.permisos import RutaProtegida
-from transportistas.models import Transportista
+from rcdproject.obras.models import Obra, SolicitudObra, ArchivoObra
+from rcdproject.obras.serializers import ObraSerializer, SolicitudObraSerializer, SolicitudObraAdminSerializer
+from rcdproject.clientes.models import Cliente
+from rcdproject.puntolimpio.models import PuntoLimpio
+from rcdproject.materiales.models import Material
+from rcdproject.usuarios.permisos import RutaProtegida
+from rcdproject.transportistas.models import Transportista
 
 class RegistroObra(APIView):
     """
@@ -32,7 +32,7 @@ class RegistroObra(APIView):
             cliente = Cliente.objects.get(pk=obra.cliente.id)
             
             return Response({
-                'mensaje': 'Obra registrada, pendiente de aprobación.',
+                'mensaje': 'Obra registrada, pendiente de aprobacion.',
                 'obra': ObraSerializer(obra, context={'request': request}).data,
                 'solicitud': SolicitudObraSerializer(solicitud, context={'request': request}).data,
                 'ID de cliente': cliente.id
@@ -194,12 +194,12 @@ class ListarObraPorCliente(generics.ListAPIView):
             return Obra.objects.filter(cliente__usuario__email=user.email)
         return Obra.objects.none()
 
-from supervisor_obra.serializers import SupervisorObraSerializer
+from rcdproject.supervisor_obra.serializers import SupervisorObraSerializer
 
 class SupervisoresDeObra(APIView):
     """
     Devuelve el supervisor vinculado a la obra (o lista vacía si no hay).
-    Como la relación es OneToOne, solo habrá 1 o ninguno.
+    Como la relacion es OneToOne, solo habrá 1 o ninguno.
     """
     permission_classes = [RutaProtegida([
         'superadmin', 
@@ -216,11 +216,11 @@ class SupervisoresDeObra(APIView):
         except Obra.DoesNotExist:
             return Response({"error": "Obra no encontrada."}, status=status.HTTP_404_NOT_FOUND)
         
-        # Si la obra no tiene supervisor, la relación OneToOne puede no existir
+        # Si la obra no tiene supervisor, la relacion OneToOne puede no existir
         if not hasattr(obra, 'supervisor'):
             return Response([], status=status.HTTP_200_OK)
         
-        # En tu modelo, la relación se llama 'supervisor'
+        # En tu modelo, la relacion se llama 'supervisor'
         sup = obra.supervisor  
         serializer = SupervisorObraSerializer(sup) 
         # Retornamos un array con un solo elemento para que el frontend maneje un array

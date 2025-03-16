@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='empresagestora',
             name='tipo_material',
-            field=models.CharField(choices=[('escombro_limpio', 'Escombro Limpio'), ('plastico', 'Plástico'), ('papel_carton', 'Papel y Cartón'), ('metales', 'Metales'), ('madera', 'Madera'), ('mezclados', 'Mezclados'), ('peligrosos', 'Peligrosos')], default='plastico', max_length=20),
+            field=models.CharField(choices=[('escombro_limpio', 'Escombro Limpio'), ('plastico', 'Plástico'), ('papel_carton', 'Papel y Carton'), ('metales', 'Metales'), ('madera', 'Madera'), ('mezclados', 'Mezclados'), ('peligrosos', 'Peligrosos')], default='plastico', max_length=20),
         ),
     ]

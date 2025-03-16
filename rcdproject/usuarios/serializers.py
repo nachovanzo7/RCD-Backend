@@ -36,7 +36,7 @@ class CrearUsuarioSerializer(serializers.ModelSerializer):
         )
         return user
     
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 class UsuarioSerializer(serializers.ModelSerializer):
     rol = serializers.ChoiceField(choices=Usuario.ROLES)
     

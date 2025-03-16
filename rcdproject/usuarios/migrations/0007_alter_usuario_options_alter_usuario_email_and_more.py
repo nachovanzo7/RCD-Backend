@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usuarios', '0006_alter_usuario_email_alter_usuario_rol'),
+        ('rcdproject_usuarios', '0006_alter_usuario_email_alter_usuario_rol'),
     ]
 
     operations = [
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='usuario',
             name='email',
-            field=models.EmailField(db_index=True, max_length=254, unique=True, verbose_name='Correo electrónico'),
+            field=models.EmailField(db_index=True, max_length=254, unique=True, verbose_name='Correo electronico'),
         ),
         migrations.AlterField(
             model_name='usuario',

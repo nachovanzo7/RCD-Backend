@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class TransportistasConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'transportistas'
+    name = 'rcdproject.transportistas'

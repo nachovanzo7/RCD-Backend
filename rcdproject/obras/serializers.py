@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Obra, SolicitudObra, Cliente, ArchivoObra
+from rcdproject.obras.models import Obra, SolicitudObra, Cliente, ArchivoObra
 
 class ArchivoObraSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,9 +25,9 @@ class ObraSerializer(serializers.ModelSerializer):
             'localidad',
             'barrio',
             'direccion',
-            'm2_obra',                # Metros cuadrados
-            'tipo_construccion',      # Nuevo campo para el tipo de construcción
-            'archivos',               # Campo para múltiples archivos
+            'm2_obra',
+            'tipo_construccion',
+            'archivos',
             'cant_pisos',
             'pedido',
             'inicio_obra',
@@ -66,7 +66,7 @@ class SolicitudObraAdminSerializer(serializers.ModelSerializer):
         fields = ['estado', 'fecha_solicitud', 'obra', 'cliente', 'nombre_obra']
         read_only_fields = ['fecha_solicitud', 'obra', 'cliente', 'estado', 'nombre_obra']
 
-from supervisor_obra.models import SupervisorObra
+from rcdproject.supervisor_obra.models import SupervisorObra
 
 class SupervisorObraSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='usuario.email', read_only=True)

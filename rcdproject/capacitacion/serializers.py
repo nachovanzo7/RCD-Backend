@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Capacitacion
-from supervisor_obra.serializers import SupervisorObraSerializer  # Importa el serializer corregido
+from rcdproject.supervisor_obra.serializers import SupervisorObraSerializer  # Importa el serializer corregido
 
 class CapacitacionSerializer(serializers.ModelSerializer):
     obra_nombre = serializers.CharField(source="obra.nombre_obra", read_only=True)

@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
-from obras.models import Obra
+from rcdproject.obras.models import Obra
 
 class Mezclado(models.Model):
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE, related_name="mezclados")

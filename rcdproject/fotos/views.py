@@ -2,14 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from obras.models import Obra
-from fotos.models import Fotos
-from usuarios.permisos import RutaProtegida
-from fotos.serializers import FotosSerializer
+from rcdproject.obras.models import Obra
+from rcdproject.fotos.models import Fotos
+from rcdproject.usuarios.permisos import RutaProtegida
+from rcdproject.fotos.serializers import FotosSerializer
 
 class AgregarImagenesObra(APIView):
     """
-    Permite agregar varias imágenes a una obra, cada una con descripción y fecha.
+    Permite agregar varias imágenes a una obra, cada una con descripcion y fecha.
     Se espera que en el request.FILES se envíen múltiples archivos con la clave "imagenes",
     y en request.data se envíen listas (paralelas) en "descripciones" y "fechas".
     """
@@ -43,7 +43,7 @@ class AgregarImagenesObra(APIView):
 
 class VerImagenesObra(APIView):
     """
-    Devuelve todas las imágenes de una obra, incluyendo descripción y fecha.
+    Devuelve todas las imágenes de una obra, incluyendo descripcion y fecha.
     """
     permission_classes = [RutaProtegida(['superadmin', 'tecnico', 'coordinador', 'coordinadorlogistico'])]
 
