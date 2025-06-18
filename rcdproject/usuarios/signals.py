@@ -18,12 +18,14 @@ def crear_token_automatico(sender, instance=None, created=False, **kwargs):
 @receiver(post_migrate)
 def create_default_superadmin(sender, **kwargs):
     User = get_user_model()
-    if not User.objects.filter(username='admin').exists():
+    email = 'admin@example.com'
+
+    if not User.objects.filter(email=email).exists():
         User.objects.create_superuser(
-            username='admin',
-            email='admin@example.com',
+            email=email,
             password='admin123',
-            rol='superadmin'
+            rol='superadmin',
+            username='admin'  # Solo si tu modelo aún lo necesita
         )
         
 

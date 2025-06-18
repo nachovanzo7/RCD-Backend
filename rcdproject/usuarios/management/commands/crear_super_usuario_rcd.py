@@ -7,13 +7,12 @@ class Command(BaseCommand):
     help = 'Crea el superusuario "RCD Gestion"'
 
     def handle(self, *args, **options):
-        nombre_usuario = 'Gestion RCD'
         email = 'RCDgestion@gmail.com'
-        contrasena = 'Añonuevovidanueva'
-        rol = 'super_administrador'
+        password = 'Añonuevovidanueva'
+        rol = 'superadmin'  # ajusta el nombre del rol que usas
 
-        if not Usuario.objects.filter(username=nombre_usuario).exists():
-            Usuario.objects.create_superuser(username=nombre_usuario, email=email, password=contrasena, rol=rol)
-            self.stdout.write(self.style.SUCCESS('Superusuario "RCD Gestion" creado exitosamente.'))
+        if not Usuario.objects.filter(email=email).exists():
+            Usuario.objects.create_superuser(email=email, password=password, rol=rol)
+            self.stdout.write(self.style.SUCCESS('Superusuario creado exitosamente.'))
         else:
             self.stdout.write(self.style.WARNING('El superusuario ya existe.'))

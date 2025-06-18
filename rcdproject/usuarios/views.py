@@ -1,27 +1,32 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
-from django.contrib.auth import get_user_model
-from .serializers import ActualizarDatosSuperUsuarioSerializer, CrearUsuarioSerializer
+import logging
+from django.utils import timezone
+from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError as DjangoValidationError
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import AllowAny
-from .permisos import RutaProtegida
-from rcdproject.clientes.models import Cliente
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authtoken.models import Token
+
+from rcdproject.usuarios.permisos import RutaProtegida
+from rcdproject.usuarios.serializers import (
+    ActualizarDatosSuperUsuarioSerializer,
+    CrearUsuarioSerializer,
+    UsuarioSerializer
+)
+from rcdproject.clientes.models import Cliente, SolicitudCliente
+from rcdproject.obras.models import Obra
+from rcdproject.tecnicos.models import Tecnico
+from rcdproject.supervisor_obra.models import SupervisorObra
 
 Usuario = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class ActualizarDatosSuperUsuario(APIView):
-    """
-    Permite al superusuario modificar su email y contraseña.
-    Requiere autenticación y rol 'superadmin'.
-    """
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
@@ -39,26 +44,10 @@ class ActualizarDatosSuperUsuario(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# usuarios/views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.authtoken.models import Token
-from django.core.exceptions import ValidationError as DjangoValidationError
-from rcdproject.usuarios.permisos import RutaProtegida
-from rcdproject.usuarios.serializers import CrearUsuarioSerializer
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import AllowAny
-from rcdproject.obras.models import Obra
-from rcdproject.tecnicos.models import Tecnico
-from rcdproject.supervisor_obra.models import SupervisorObra
-
 class CrearUsuario(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]
 
     def post(self, request):
-
         serializer = CrearUsuarioSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -67,41 +56,52 @@ class CrearUsuario(APIView):
             usuario = serializer.save()
         except DjangoValidationError as e:
             return Response(e.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            logger.exception("Error al crear usuario:")
+            return Response({'error': 'Error interno al crear el usuario.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         rol = request.data.get('rol')
         obra_id = request.data.get('obra')
 
-        if rol == 'tecnico' and obra_id:
-            try:
-                tecnico_obj, created = Tecnico.objects.get_or_create(
-                    usuario=usuario,
-                    defaults={'nombre': usuario.username}
-                )
+        try:
+            if rol == 'tecnico' and obra_id:
+                tecnico, _ = Tecnico.objects.get_or_create(usuario=usuario, defaults={'nombre': usuario.username})
                 obra = Obra.objects.get(pk=obra_id)
-                obra.tecnico = tecnico_obj
+                obra.tecnico = tecnico
                 obra.save()
-            except Obra.DoesNotExist:
-                pass
-            except Tecnico.DoesNotExist:
-                pass
 
-        elif rol == 'supervisor' and obra_id:
-            try:
-                obra_obj = Obra.objects.get(pk=obra_id)
+            elif rol == 'supervisor' and obra_id:
+                obra = Obra.objects.get(pk=obra_id)
+                SupervisorObra.objects.get_or_create(
+                    usuario=usuario,
+                    defaults={'telefono': '', 'obra': obra}
+                )
 
-                sup_obj, created = SupervisorObra.objects.get_or_create(
+            elif rol == 'cliente':
+                cliente, _ = Cliente.objects.get_or_create(
                     usuario=usuario,
                     defaults={
-                        'telefono': '',
-                        'obra': obra_obj,
+                        'nombre': usuario.username,
+                        'direccion': '',
+                        'contacto': '',
+                        'nombre_contacto': '',
+                        'fecha_ingreso': timezone.now().date(),
+                        'razon_social': '',
+                        'direccion_fiscal': '',
+                        'rut': ''
                     }
                 )
-            except Obra.DoesNotExist:
-                pass
-            except SupervisorObra.DoesNotExist:
-                pass
+
+                SolicitudCliente.objects.update_or_create(
+                    cliente=cliente,
+                    defaults={'estado': 'aceptado'}
+                )
+        except Exception as e:
+            logger.exception("Error al asignar rol o crear relación:")
+            return Response({'error': 'Error al asociar usuario con su rol.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         token, _ = Token.objects.get_or_create(user=usuario)
+
         return Response({
             "mensaje": "Usuario creado exitosamente.",
             "usuario": {
@@ -113,18 +113,16 @@ class CrearUsuario(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
-import logging
-logger = logging.getLogger(__name__)
-
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
-    authentication_classes = []  
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def post(self, request):
         try:
             email = request.data.get('email')
             password = request.data.get('password')
+
             if not email or not password:
                 return Response(
                     {'error': 'Por favor, ingresa el email y la contraseña.'},
@@ -136,7 +134,6 @@ class LoginView(APIView):
             except Usuario.DoesNotExist:
                 return Response({'error': 'Credenciales inválidas.'}, status=status.HTTP_401_UNAUTHORIZED)
 
-            # Verifica si es cliente y si está aprobado (ajusta según tu lógica)
             if user_obj.rol == 'cliente':
                 try:
                     cliente = Cliente.objects.get(usuario=user_obj)
@@ -155,12 +152,12 @@ class LoginView(APIView):
                 'email': user.email,
                 'rol': user.rol
             }, status=status.HTTP_200_OK)
-        except Exception as e:
+
+        except Exception:
             logger.exception("Error en LoginView:")
             return Response({'error': 'Error interno en el servidor.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-from rcdproject.tecnicos.models import Tecnico
-from rcdproject.supervisor_obra.models import SupervisorObra
+
+
 class ActualizarUsuario(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]
 
@@ -176,20 +173,17 @@ class ActualizarUsuario(APIView):
             usuario_actualizado = serializer.save()
             obra = serializer.validated_data.get('obra')
 
-            # Si es técnico, actualiza su obra relacionada
             if usuario_actualizado.rol == 'tecnico':
-                tecnico, created = Tecnico.objects.get_or_create(usuario=usuario_actualizado)
+                tecnico, _ = Tecnico.objects.get_or_create(usuario=usuario_actualizado)
                 if obra:
                     obra.tecnico = tecnico
                     obra.save()
 
-            # Si es supervisor, actualiza la relación en la app SupervisorObra
             elif usuario_actualizado.rol == 'supervisor':
-                supervisor, created = SupervisorObra.objects.get_or_create(usuario=usuario_actualizado, defaults={
-                    'telefono': '',
-                    'nivel_capacitacion': 'no_hay',
-                    'obra': obra
-                })
+                supervisor, created = SupervisorObra.objects.get_or_create(
+                    usuario=usuario_actualizado,
+                    defaults={'telefono': '', 'nivel_capacitacion': 'no_hay', 'obra': obra}
+                )
                 if not created and obra:
                     supervisor.obra = obra
                     supervisor.save()
@@ -200,10 +194,7 @@ class ActualizarUsuario(APIView):
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
-Usuario = get_user_model()
-from rcdproject.usuarios.serializers import UsuarioSerializer
 
 class ListarUsuarios(APIView):
     permission_classes = [RutaProtegida(['superadmin'])]
@@ -212,4 +203,3 @@ class ListarUsuarios(APIView):
         usuarios = Usuario.objects.all()
         serializer = UsuarioSerializer(usuarios, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-

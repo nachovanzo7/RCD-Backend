@@ -53,6 +53,11 @@ REST_FRAMEWORK = {
     ],
 }
 
+AUTHENTICATION_BACKENDS = [
+    'rcdproject.usuarios.authentication.EmailBackend',
+]
+
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -92,9 +97,9 @@ WSGI_APPLICATION = 'rcdproject.rcdproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'gestion_rcd_database'),
-        'USER': os.environ.get('POSTGRES_USER', 'rcd_username'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'rcd_gestion'),
+        'NAME': os.environ.get('POSTGRES_DB', 'rcd'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'nachovanzo'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('POSTGRES_PORT', '5432'),
         'OPTIONS': {
